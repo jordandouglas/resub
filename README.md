@@ -34,7 +34,7 @@ To run these XML files, please also install the following BEAST 2 packages throu
 
 ## Running
 
-This model currently does not have BEAUti support, however there are several `XML` files in the `examples` directory that can help you get started. 
+This model currently does not have BEAUti support, however there are several `XML` files in the `examples` directory that can help you get started. These files can also be used to reproduce the results of the article.
 
 
 ## Support

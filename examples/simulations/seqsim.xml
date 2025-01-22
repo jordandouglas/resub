@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihoodbeast.base.evolution.alignment:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.tree.coalescent:beast.pkgmgmt:beast.base.core:beast.base.inference.util:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood" required="" version="2.7">
+
+
+
+
+<map name="Beta">beast.base.inference.distribution.Beta</map>
+<map name="Exponential">beast.base.inference.distribution.Exponential</map>
+<map name="InverseGamma">beast.base.inference.distribution.InverseGamma</map>
+<map name="LogNormal">beast.base.inference.distribution.LogNormalDistributionModel</map>
+<map name="Gamma">beast.base.inference.distribution.Gamma</map>
+<map name="Uniform">beast.base.inference.distribution.Uniform</map>
+<map name="prior">beast.base.inference.distribution.Prior</map>
+<map name="LaplaceDistribution">beast.base.inference.distribution.LaplaceDistribution</map>
+<map name="OneOnX">beast.base.inference.distribution.OneOnX</map>
+<map name="Normal">beast.base.inference.distribution.Normal</map>
+<map name="taxon">beast.base.evolution.alignment.Taxon</map>
+<map name="taxonset">beast.base.evolution.alignment.TaxonSet</map>
+<map name="Dirichlet" >beast.base.inference.distribution.Dirichlet</map>
+
+
+<parameter id="branchRates" spec="beast.base.inference.parameter.RealParameter">1</parameter>
+<parameter id="spikes" spec="beast.base.inference.parameter.RealParameter">1</parameter>
+<parameter id="nstubsPerBranch" spec="beast.base.inference.parameter.IntegerParameter">0</parameter>
+<parameter id="indicators" spec="beast.base.inference.parameter.IntegerParameter">0</parameter>
+
+
+<parameter id="transitionPi" spec="parameter.RealParameter" lower="0.0" upper="1.0" name="stateNode">$(transitionPi)</parameter>
+<parameter id="transitionHeight" spec="parameter.RealParameter" lower="0.0" name="stateNode">$(transitionHeight)</parameter>
+<parameter id="useResub" spec="parameter.BooleanParameter" name="stateNode">$(useResub)</parameter>
+<parameter id="aaRefine" spec="parameter.BooleanParameter" name="stateNode">$(aaRefine)</parameter>
+<parameter id="aaExpand" spec="parameter.BooleanParameter" name="stateNode">$(aaExpand)</parameter>
+
+
+<userDataType id="aaDataType" spec='beast.base.evolution.datatype.Aminoacid' />
+
+<!-- Use the aaRS empirical substitution model -->
+<parameter id="aa.rates" spec="parameter.RealParameter" name="stateNode" dimension="190">
+               4.432 0.3791 0.5617 0.3362 2.015 0.4722 0.2673 0.4467 0.321 1.228 0.3354 0.8666 0.6356 0.3921 3.992 1.748 2.319 0.1529 0.5584 0.2803 0.1374 0.9365 0.72 0.5864 0.5093 0.1167 1.795 1.164 2.392 0.5706 0.3118 0.5543 3.314 2.908 4.416 0.5549 0.7716 3.573 0.01 0.9316 0.5865 0.01 0.8569 0.01 0.01 4.696 0.439 0.9639 0.2175 1.326 0.569 0.1409 0.2392 0.1486 0.1159 0.1641 0.4819 0.01 1.411 0.1136 0.08969 1.256 0.327 2.988 0.4909 0.6071 0.5711 0.2406 0.01 0.1393 0.01 0.9002 1.036 0.01 1.698 1.859 0.01 0.07376 0.01 0.07911 0.1126 0.1634 0.7343 2.039 5.874 0.2773 0.01 0.4422 0.03281 0.1001 1.566 0.2708 0.1631 0.07232 1.353 0.3508 0.01 0.09905 0.06602 0.2757 0.7037 0.2954 0.4792 4.619 0.2693 2.937 0.8973 1.689 1.271 0.3938 0.844 3.762 0.1303 3.875 3.457 0.1901 0.1478 0.3567 0.1924 0.01 0.7648 8.736 0.09717 0.2367 0.2786 0.4948 2.082 0.7338 3.489 4.43 1.33 0.8052 0.2321 0.01 0.4391 5.448 0.153 0.1993 0.5316 0.2138 0.115 0.5175 1.843 0.3811 0.479 0.2044 0.2669 2.433 0.3585 0.6762 1.537 1.743 0.7427 0.7593 0.6591 2.387 1.513 3.206 1.63 0.3433 0.09767 1.115 0.3913 0.2988 1.019 0.7811 0.4544 0.09392 0.26 1.398 1.005 1.187 0.3361 0.4068 0.3809 0.8003 0.5168 0.1538 0.3695 0.2763 5.064 0.4246 0.3724 0.2348 2.892 0.4379 0.5008 0.2431 0.5531 2.117
+</parameter>
+
+<!-- <frequencies id="aa.frequencies" spec="RealParameter" lower="0" upper="1">$(aa.frequencies)</frequencies> -->
+<frequencies id="aa.frequencies" spec="parameter.RealParameter" lower="0" upper="1">0.07611 0.01206 0.04293 0.07649 0.05826 0.06448 0.02521 0.0684 0.05763 0.09824 0.02922 0.03194 0.03257 0.03192 0.06107 0.0547 0.04757 0.06342 0.02267 0.04511</frequencies>
+<frequencies id="aa.freqs" spec='Frequencies' frequencies="@aa.frequencies" />
+
+<parameter id="substModel.indicator" spec="parameter.BooleanParameter" name="stateNode" dimension="190">true</parameter>
+<substModel id="resubModel" spec="resub.substitutionmodel.SingleTransitionResub" useResub="@useResub" pi="@transitionPi" state1="$(state1)" state2="$(state2)" h1="@transitionHeight" frequencies="@aa.freqs" refine="@aaRefine" expand="@aaExpand" substModel="@svs.substModel" /> 
+
+
+<substModel id="svs.substModel" spec="beastclassic.evolution.substitutionmodel.SVSGeneralSubstitutionModel" rates="@aa.rates" symmetric="true" rateIndicator="@substModel.indicator">
+    <frequencies idref="aa.freqs" />
+</substModel>
+
+<data id="simulatedData" spec='beastfx.app.seqgen.SimulatedAlignment' sequencelength="100" outputFileName="simulated.xml" >
+
+	<userDataType idref="aaDataType" />
+
+	<tree id="simulatedTree" spec='beast.base.evolution.tree.TreeParser' newick="$(tree)" IsLabelledNewick="true" adjustTipHeights="false"/>
+
+
+
+	<data id="mockData" spec="beast.base.evolution.alignment.Alignment" userDataType="@aaDataType">
+			 <plate var="s" range="$(taxonRange)">
+        	<sequence taxon="$(s)">?</sequence>
+   		 </plate>
+	</data>
+
+
+	<siteModel spec='beast.base.evolution.sitemodel.SiteModel' shape="$(gammaShape)" gammaCategoryCount="4">
+
+
+		<!-- <substModel idref="svs.substModel" /> -->
+		<substModel idref="resubModel" />
+
+
+
+   </siteModel>
+
+
+	<!--  -->
+   <branchRateModel id="clockModel" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" spikeMean="$(spikeMean)" indicator="$(useSpikeModel)" relaxed="true" clock.rate="1.0" nstubsPerBranch="@nstubsPerBranch" tree="@simulatedTree" spikes="@spikes" rates="@branchRates" parseFromTree="true" />
+
+
+    <!-- <branchRateModel id="clockModel" spec="beast.base.evolution.branchratemodel.StrictClockModel"  clock.rate="1.0" /> -->
+
+
+
+</data>
+
+
+	
+<!-- dummy -->
+<run id="mcmc" spec="beast.base.inference.MCMC" chainLength="1">
+
+
+
+    <state id="state" spec="beast.base.inference.State" storeEvery="50000">
+		<parameter id="popMean" spec="parameter.RealParameter" lower="0.0" name="stateNode">0.1</parameter>
+		<tree id="tree" name="stateNode">
+            <taxonset  spec="beast.base.evolution.alignment.TaxonSet">
+                <data idref="simulatedData" name="alignment"/>
+            </taxonset>
+        </tree>
+
+    </state>
+
+
+
+    <distribution id="posterior" spec="beast.base.inference.CompoundDistribution">
+	
+		 <prior id="popMean.prior" name="distribution" x="@popMean">
+                <LogNormal meanInRealSpace="true" name="distr" M="0.05" S="0.5"/>
+            </prior>
+
+    </distribution>
+
+
+	<operator id="Scale.popmean" spec="kernel.BactrianScaleOperator" parameter="@popMean" upper="10.0" weight="1.0"/>
+
+
+	<logger fileName="simulated.log" id="tracelog" logEvery="1" sanitiseHeaders="true" sort="smart">
+		<log idref="resubModel"/>
+	</logger>
+
+    <logger id="screenlog" spec="Logger" logEvery="10000">
+		<log idref="resubModel"/>
+    </logger>
+
+    <logger id="treelog" spec="Logger" fileName="simulated.trees" logEvery="1" mode="tree">
+        <log spec="beast.base.evolution.TreeWithMetaDataLogger" sort="false" tree="@simulatedTree">
+        	<metadata idref="nstubsPerBranch" />
+        	<metadata idref="spikes" />
+        	<metadata idref="branchRates" />
+        </log>
+    </logger> 
+	
+
+
+
+
+</run>
+
+</beast>
