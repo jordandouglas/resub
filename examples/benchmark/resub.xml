@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate="Standard" beautistatus="" namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.base.evolution.alignment:beast.pkgmgmt:beast.base.core:beast.base.inference:beast.base.evolution.tree.coalescent:beast.pkgmgmt:beast.base.core:beast.base.inference.util:beast.evolution.nuc:beast.base.evolution.operator:beast.base.inference.operator:beast.base.evolution.sitemodel:beast.base.evolution.substitutionmodel:beast.base.evolution.likelihood" required="BEAST.base v2.7.5:BICEPS v1.1.2:bModelTest v1.3.3:OBAMA v1.1.1:ORC v1.1.2:BEASTLabs v2.0.2" version="2.7">
+
+
+    <map name="Uniform" >beast.base.inference.distribution.Uniform</map>
+    <map name="Exponential" >beast.base.inference.distribution.Exponential</map>
+    <map name="LogNormal" >beast.base.inference.distribution.LogNormalDistributionModel</map>
+    <map name="Normal" >beast.base.inference.distribution.Normal</map>
+    <map name="Beta" >beast.base.inference.distribution.Beta</map>
+    <map name="Gamma" >beast.base.inference.distribution.Gamma</map>
+    <map name="LaplaceDistribution" >beast.base.inference.distribution.LaplaceDistribution</map>
+    <map name="prior" >beast.base.inference.distribution.Prior</map>
+    <map name="InverseGamma" >beast.base.inference.distribution.InverseGamma</map>
+    <map name="OneOnX" >beast.base.inference.distribution.OneOnX</map>
+    <map name="Poisson" >beast.base.inference.distribution.Poisson</map>
+    <map name="Dirichlet" >beast.base.inference.distribution.Dirichlet</map>
+
+
+    <!-- Use the aaRS empirical substitution model -->
+    <frequencies id="aa.freqs" spec='Frequencies' frequencies="@aa.frequencies" />
+
+    <substModel id="resubModel" spec="resub.substitutionmodel.SingleTransitionResub" useResub="@useResub" pi="@transitionPi" state1="$(state1)" state2="$(state2)" h1="@transitionHeight" frequencies="@aa.freqs" refine="@aaRefine" expand="@aaExpand" substModel="@svs.substModel" /> 
+
+
+    <data id="data" spec="beast.base.evolution.alignment.Alignment">
+        <userDataType id="aaDataType" spec='beast.base.evolution.datatype.Aminoacid' />
+        $(data)
+    </data>
+
+
+    <substModel id="svs.substModel" spec="beastclassic.evolution.substitutionmodel.SVSGeneralSubstitutionModel" rates="@aa.rates" symmetric="true" rateIndicator="@substModel.indicator">
+        <frequencies idref="aa.freqs"/>
+    </substModel>
+
+
+    <stubs id="stubs" spec="gammaspike.tree.Stubs" tree="@tree" prior="@StumpedTreePrior" />
+
+    <run id="mcmc" spec="MCMC" chainLength="50000000">
+        <state id="state" spec="State" storeEvery="100000">
+
+
+           <tree id="tree" spec="beast.base.evolution.tree.Tree" name="stateNode">
+                <taxonset id="TaxonSet.tree" spec="TaxonSet">
+                    <alignment idref="data"/>
+                </taxonset>
+            </tree>
+
+
+            <parameter id="aa.rates" spec="parameter.RealParameter" name="stateNode" dimension="190">1</parameter>
+            <parameter id="substModel.indicator" spec="parameter.BooleanParameter" name="stateNode" dimension="190">true</parameter>
+
+            <stateNode id="OBAMA_ModelIndicator.s:aaRS" spec="parameter.IntegerParameter" lower="0" upper="12">1</stateNode>
+
+            <parameter id="lambda" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
+            <parameter id="r0" spec="parameter.RealParameter" name="stateNode" lower="1">2</parameter>
+
+
+            <parameter id="gammaShape" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
+            <parameter id="aa.frequencies" spec="parameter.RealParameter" name="stateNode" lower="0" upper="1" dimension="20">0.05</parameter>
+
+            <parameter id="branchRates" spec="parameter.RealParameter" name="stateNode" lower="0" dimension="1">1</parameter> 
+            <parameter id="spikes" spec="parameter.RealParameter" name="stateNode" lower="0" dimension="1">1</parameter> 
+            <parameter id="clockSD" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
+            <parameter id="spikeShape" spec="parameter.RealParameter" name="stateNode" lower="0.2">1.0</parameter>
+            <parameter id="spikeMean" spec="parameter.RealParameter" name="stateNode" lower="0" upper="1.0">0.01</parameter>
+
+            <parameter id="useResub" spec="parameter.BooleanParameter" name="stateNode">0</parameter>
+            <parameter id="aaRefine" spec="parameter.BooleanParameter" name="stateNode">0</parameter>
+            <parameter id="aaExpand" spec="parameter.BooleanParameter" name="stateNode">0</parameter>
+            <parameter id="transitionPi" spec="parameter.RealParameter" lower="0.0" upper="1.0" name="stateNode">0.5</parameter>
+            <parameter id="transitionHeight" spec="parameter.RealParameter" lower="0.0" name="stateNode">0.01</parameter>
+
+            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">true</parameter>
+
+           
+        </state>
+
+         <init spec="RandomTree" estimate="false" initial="@tree" taxa="@data">
+            <populationModel id="ConstantPopulation0.t:aaRS" spec="ConstantPopulation">
+                <parameter id="randomPopSize.t:aaRS" spec="parameter.RealParameter" name="popSize">1</parameter>
+            </populationModel>
+        </init>
+
+        <init id="SVSInitialiser" spec="resub.substitutionmodel.SVSInit" indicator="@substModel.indicator" dataType="@aaDataType">
+            <data idref="data" />
+        </init>
+
+
+
+
+        <distribution id="posterior" spec="CompoundDistribution">
+            <distribution id="prior" spec="CompoundDistribution">
+               
+
+                 <prior name="distribution" x="@aa.rates">
+                    <LogNormal name="distr" meanInRealSpace="true" M="1" S="1"/>
+                 </prior>
+              
+                <prior id="substModel.indicator.prior" spec="resub.math.BooleanPoissonDistribution" name="distribution" x="@substModel.indicator" lambda="100" />
+
+                  <distribution id="StumpedTreePrior" spec="gammaspike.distribution.StumpedTreePrior" r0="@r0" lambda="@lambda" ignoreTreePrior="false" ignoreStubPrior="false" tree="@tree"> 
+                 </distribution>
+
+
+
+
+
+                 <prior name="distribution" x="@lambda">
+                    <LogNormal  name="distr" meanInRealSpace="true" M="1" S="2"/>
+                 </prior>
+
+
+                <prior name="distribution" x="@r0">
+                    <Exponential  name="distr" mean="5" offset="1"/>
+                 </prior>
+
+
+                <prior name="distribution" x="@gammaShape">
+                    <Exponential name="distr" mean="1"/>
+                 </prior> 
+
+                <prior name="distribution" x="@aa.frequencies">
+                    <Dirichlet name="distr">
+                        <parameter spec="parameter.RealParameter" dimension="20" lower="0.0" name="alpha" upper="0.0">4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0</parameter>
+                    </Dirichlet>
+                 </prior> 
+
+                 <prior id="transitionPi.prior" name="distribution" x="@transitionPi">
+                        <Beta alpha="4" beta="4" name="distr" />
+                </prior>
+
+
+
+                 <prior name="distribution" x="@clockSD">
+                    <Gamma name="distr" alpha="5" beta="0.05"/>
+                 </prior> 
+
+
+                 <prior name="distribution" x="@spikeMean">
+                    <LogNormal  name="distr" meanInRealSpace="true" M="0.01" S="1.2"/>
+                 </prior>
+
+
+
+                <distribution spec="beastlabs.math.distributions.BetaRange" x="@transitionHeight" lower="0" upper="@treeHeight" alpha="6" beta="2"/>
+
+
+                 <prior name="distribution" x="@spikeShape">
+                   <LogNormal  name="distr" meanInRealSpace="true" M="2" S="0.5"/>
+                 </prior>
+
+                 <prior name="distribution" spec="gammaspike.distribution.BranchRatePrior" branchRates="@branchRates" tree="@tree" sigma="@clockSD"/>
+
+                 <prior id="BranchSpikePrior" name="distribution" spec="gammaspike.distribution.BranchSpikePrior" stubs="@stubs" spikes="@spikes" tree="@tree" shape="@spikeShape"  indicator="@useSpikeModel"/>
+
+
+
+            </distribution>
+
+             <distribution id="likelihood" spec="beast.base.inference.CompoundDistribution">
+
+
+
+
+                <distribution data="@data" id="treeLikelihood" spec="resub.likelihood.EpochBeagleTreeLikelihood" tree="@tree">
+                    
+
+                        <epochDates idref="transitionHeight" />
+
+                        <!-- Subst models in reverse time -->
+                        <model idref="svs.substModel" />
+                        <model idref="resubModel" />
+
+                        <siteModel spec='beast.base.evolution.sitemodel.SiteModel' shape="@gammaShape" gammaCategoryCount="4">
+                            <substModel spec="beast.base.evolution.substitutionmodel.WAG" />
+                       </siteModel>
+
+                    <branchRateModel id="clockModel" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" noSpikeOnDatedTips="false" spikeMean="@spikeMean" indicator="@useSpikeModel" relaxed="true" clock.rate="1.0" stubs="@stubs" tree="@tree" spikes="@spikes" rates="@branchRates" parseFromTree="false" />
+
+                    
+             
+                    
+                </distribution>
+            </distribution>
+
+        </distribution>
+
+
+        <!-- Tree operators -->
+        <operator id="YuleModelTreeRootScaler.tclass1" spec="kernel.BactrianScaleOperator" rootOnly="true" scaleFactor="0.5" tree="@tree" upper="10.0" weight="3.0"/>
+        <operator id="YuleModelUniformOperator.tclass1" spec="kernel.BactrianNodeOperator" tree="@tree" weight="30.0"/>
+        <operator id="YuleModelSubtreeSlide.tclass1" spec="kernel.BactrianSubtreeSlide" tree="@tree" weight="15.0"/>
+        <operator id="YuleModelNarrow.tclass1" spec="Exchange" tree="@tree" weight="30.0"/>
+        <operator id="YuleModelWide.tclass1" spec="Exchange" isNarrow="false" tree="@tree" weight="3.0"/>
+        <operator id="YuleModelWilsonBalding.tclass1" spec="WilsonBalding" tree="@tree" weight="3.0"/>
+        <operator id="YuleModelBICEPSEpochTop.tclass1" spec="EpochFlexOperator" scaleFactor="0.1" tree="@tree" weight="2.0"/>
+        <operator id="YuleModelBICEPSEpochAll.tclass1" spec="EpochFlexOperator" fromOldestTipOnly="false" scaleFactor="0.1" tree="@tree" weight="2.0"/>
+        <operator id="YuleModelBICEPSTreeFlex.tclass1" spec="TreeStretchOperator" scaleFactor="0.01" tree="@tree" weight="2.0"/>
+
+
+
+
+        <!-- Site model -->
+        <operator id="frequenciesOperator" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="500" initial="1000" weight="3.0">
+            <transformations spec="operator.kernel.Transform$LogTransform">
+                <f idref="gammaShape"/>
+                <f idref="transitionHeight"/>
+            </transformations>
+            <transformations spec="operator.kernel.Transform$LogConstrainedSumTransform">
+                <f idref="aa.frequencies"/>
+            </transformations>
+             <transformations spec="operator.kernel.Transform$LogitTransform">
+                <f idref="transitionPi"/>
+            </transformations>
+        </operator>
+        <operator id="_gammaShapeScaler.s:dna" spec="ScaleOperator" parameter="@gammaShape" scaleFactor="0.5" weight="0.2"/>
+        <operator id="OBAMA_ModelIndicatorUniformOperator.s:aaRS" spec="operator.UniformOperator" parameter="@OBAMA_ModelIndicator.s:aaRS" weight="3.0"/>
+
+
+
+        <!-- Resub operators -->
+        <operator id="aaExpand.flipper" spec="beast.base.inference.operator.BitFlipOperator" parameter="@aaExpand" uniform="false" weight="1.0"/>
+        <operator id="aaRefine.flipper" spec="beast.base.inference.operator.BitFlipOperator" parameter="@aaRefine" uniform="false" weight="1.0"/>
+        <operator id="useResub.flipper" spec="BitFlipOperator" uniform="true" parameter="@useResub" weight="2.0" />
+        <operator id="Scale.transitionHeight" spec="kernel.BactrianScaleOperator" parameter="@transitionHeight" weight="0.5"/>
+        <operator id="transitionPi.uniform" spec="UniformOperator" parameter="@transitionPi" weight="0.5"/>
+
+
+        
+        <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="3.0" />
+
+
+        <!-- Site/clock model operators -->
+        <operator id="SpikeUpRateDown" spec="gammaspike.operator.SpikeUpRateDown" parameter="@branchRates" spikes="@spikes" scaleFactor="0.1" weight="5.0"/>
+        <operator id="clockSD.scale" spec="kernel.BactrianScaleOperator" parameter="@clockSD" scaleFactor="0.1" weight="5.0"/>
+        <operator id="spikeShape.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeShape" scaleFactor="0.1" weight="1.0"/>
+        <operator id="spikeMean.scale" spec="kernel.BactrianScaleOperator" parameter="@spikeMean" scaleFactor="0.1" weight="5.0"/>
+        <operator id="spikes.scale" spec="kernel.BactrianScaleOperator" parameter="@spikes" scaleFactor="0.1" weight="30.0"/>
+        <operator id="ORCAdaptableOperatorSampler_rates_internal.c:tree" spec="AdaptableOperatorSampler" weight="20.0">
+            <parameter idref="branchRates"/>
+            <tree idref="tree"/>
+            <operator id="StumpedTreeConstantDistanceOperator" spec="gammaspike.operator.StumpedTreeConstantDistanceOperator" stubs="@stubs" twindowSize="0.005" tree="@tree" rates="@branchRates"  weight="10.0"/>
+            <operator id="ORCRatesRandomWalk.c:tree" spec="operator.kernel.BactrianRandomWalkOperator" parameter="@branchRates" scaleFactor="0.1" weight="1.0" />
+            <operator id="ORCRatesScale.c:tree" spec="kernel.BactrianScaleOperator" parameter="@branchRates" scaleFactor="0.5" upper="10.0" weight="1.0" />
+        </operator>
+
+
+
+
+        <!-- Tree prior operators -->
+        <operator id="lambda.scale1" spec="kernel.BactrianScaleOperator" parameter="@lambda" scaleFactor="0.1" weight="1"/>
+        <operator id="r0.scale1" spec="kernel.BactrianScaleOperator" parameter="@r0" scaleFactor="0.1" weight="1"/>
+        <operator id="AVMN" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="500" initial="1000" weight="5.0">
+            <transformations spec="operator.kernel.Transform$LogTransform">
+                 <f idref="lambda"/>
+                 <f idref="r0"/>
+                 <f idref="spikeShape"/>
+                 <f idref="spikeMean"/>
+            </transformations>
+        </operator> 
+       
+
+
+
+        <operator id="substModel.indicatorFlip" spec="BitFlipOperator" parameter="@substModel.indicator" weight="5"/>
+        <operator id="substModel.scale.aa" spec="kernel.BactrianScaleOperator" parameter="@aa.rates" scaleFactor="0.1" weight="5.0"/>
+        <operator id="AVMN.substmodel" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="500" initial="1000" weight="3.0">
+            <transformations spec="operator.kernel.Transform$LogTransform">
+                 <f idref="aa.rates"/>
+            </transformations>
+        </operator> 
+
+
+     
+   
+
+
+        <logger id="tracelog" spec="Logger" fileName="$(dataset).log" logEvery="10000" model="@posterior" sanitiseHeaders="true" sort="smart">
+            <log idref="posterior"/>
+            <log idref="treeLikelihood"/>
+            <log idref="prior"/>
+            <log idref="lambda"/>
+            <log idref="spikeShape"/>
+            <log idref="spikeMean"/>
+            <log idref="r0"/>
+            <log idref="StumpedTreePrior"/>
+
+            <log idref="useResub"/>
+            <log idref="resubModel"/>
+
+            <log idref="aa.frequencies"/>
+            <log idref="transitionPi"/>
+            <log idref="transitionHeight"/>
+            <log idref="OBAMA_ModelIndicator.s:aaRS"/>
+
+
+
+
+            <log idref="useSpikeModel"/>
+            <log idref="gammaShape"/>
+
+            <log idref="stubs"/>
+
+            <log id="treeHeight" spec="beast.base.evolution.tree.TreeStatLogger" tree="@tree"/>
+            <log idref="clockSD"/>
+
+
+        </logger>
+
+         <logger id="ratelog" spec="Logger" fileName="$(dataset)-rates.log" logEvery="10000" sanitiseHeaders="false" sort="smart" ascii="false">
+            <log spec="resub.logger.RateLogger" parameter="@aa.rates" dataType="@aaDataType" indicator="@substModel.indicator"/>
+        </logger>
+
+        <logger id="screenlog" spec="Logger" logEvery="5000">
+            <log idref="likelihood"/>
+            <log idref="treeHeight" />
+            <log idref="transitionHeight"/>
+            <log idref="resubModel"/>
+            <log idref="spikeMean"/>
+            <log idref="useSpikeModel"/>
+        </logger>
+
+        <logger id="treelog" spec="Logger" fileName="$(dataset).trees" logEvery="10000" mode="tree">
+            <log id="TreeWithMetaDataLogger.t:class1" spec="gammaspike.logger.StumpedTreeLogger" tree="@tree">
+                <stubs idref="stubs" />
+                <metadata idref="branchRates" />
+                <metadata id="weightedSpikes" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes" spikeMean="@spikeMean"/>
+            </log>
+        </logger> 
+        <operatorschedule id="OperatorSchedule" spec="OperatorSchedule" autoOptimizeDelay="5000"/>
+    </run>
+
+</beast>

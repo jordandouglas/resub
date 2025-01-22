@@ -1,0 +1,20 @@
+<package name='resub' version='0.0.1'>
+	<depends on='BEAST.base' atleast='2.7.6'/>
+	<depends on='BEAST.app' atleast='2.7.6'/>
+
+
+
+    <service type="beast.base.core.BEASTInterface">
+        <provider classname="resub.likelihood.EpochBeagleTreeLikelihood"/>
+        <provider classname="resub.substitutionmodel.SingleTransitionResub"/>
+        <provider classname="resub.substitutionmodel.SVSInit"/>
+        <provider classname="resub.tree.MRCATime"/>
+        <provider classname="resub.math.NodeHeightDiff"/>
+        <provider classname="resub.math.BooleanPoissonDistribution"/>
+        <provider classname="resub.math.ResubTransitionHeightPrior"/>
+        <provider classname="resub.logger.RateLogger"/>
+    </service>
+
+
+
+</package>
