@@ -9,6 +9,8 @@ This directory contains 2 aaRS datasets. The model is configured in `config.json
 - `resub_uryzme.xml` contains a subset of the sites in the alignment above (Class I and II)
 
 
+The two Class trees are linked onto the same timescale using divergence time estimates from a previous tree of life study. 
+
 1. To select the cherry, edit `config.json` to contain the right cherry, and also the right MRCA node that the alphabet transition should occur at. For example to use the `IV` cherry make sure that `state1=I` and `state2=V`, and that the `focalPrior` points to the common ancestor of IleRS and ValRS:
 
 ```
