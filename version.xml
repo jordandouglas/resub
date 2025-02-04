@@ -13,6 +13,7 @@
         <provider classname="resub.math.BooleanPoissonDistribution"/>
         <provider classname="resub.math.ResubTransitionHeightPrior"/>
         <provider classname="resub.logger.RateLogger"/>
+        <provider classname="resub.operator.DoubleRootScaler"/>
     </service>
 
 
