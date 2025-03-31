@@ -703,6 +703,8 @@ public class EpochBeagleTreeLikelihood extends EpochTreeLikelihood {
      */
     @Override
     public double calculateLogP() {
+    	
+    	
 
         if (patternLogLikelihoods == null) {
             patternLogLikelihoods = new double[patternCount];
@@ -831,9 +833,25 @@ public class EpochBeagleTreeLikelihood extends EpochTreeLikelihood {
 	            }
 	            categoryWeights = tmp;
             }
-            double[] frequencies = rootFrequenciesInput.get() == null ?
-            						models[epochCount-1].getFrequencies() :
-                    				rootFrequenciesInput.get().getFreqs();
+            
+            double[] frequencies = null;
+            	
+        	// Get the frequencies from the oldest epoch that is younger than the root
+        	double rootHeight = this.treeInput.get().getRoot().getHeight();
+        	for (int i = epochCount-1; i >= 0; i --) {
+        		if (i == 0 || epochDatesArray[i-1] <= rootHeight) {
+        			
+        			//Log.warning("top epoch is " + i);
+        			
+        			if (i == 0 && rootFrequenciesInput.get() != null) {
+        				frequencies = rootFrequenciesInput.get().getFreqs();
+        			}else {
+        				frequencies = models[i].getFrequencies();
+        			}
+            		break;
+        		}
+        	}
+        	
 
 
             int cumulateScaleBufferIndex = Beagle.NONE;
@@ -873,6 +891,8 @@ public class EpochBeagleTreeLikelihood extends EpochTreeLikelihood {
             beagle.calculateRootLogLikelihoods(new int[]{rootIndex}, new int[]{0}, new int[]{0},
                     new int[]{cumulateScaleBufferIndex}, 1, sumLogLikelihoods);
 
+            
+            //System.out.println(this.getClass().getSimpleName() + " " + sumLogLikelihoods[0]);
             logL = sumLogLikelihoods[0];
 
             if (ascertainedSitePatterns) {
@@ -1144,9 +1164,9 @@ public class EpochBeagleTreeLikelihood extends EpochTreeLikelihood {
 		for (int k = startEpoch; k > endEpoch; k--) {
 			//Log.warning(models[k].getClass().getSimpleName() + " -> " + startTime + "-" + epochDatesArray[k-1]);
 			models[k].getTransitionProbabilities(node, startTime, epochDatesArray[k-1], jointBranchRate, p2);
-			if (k > startEpoch) {
+			if (k < startEpoch) {
 				System.arraycopy(probabilities, 0, p3, 0, probabilities.length);
-				multiplyMatrices(p2, p3, probabilities);
+				multiplyMatrices(p3, p2, probabilities);
 			} else {
 				System.arraycopy(p2, 0, probabilities, 0, probabilities.length);
 			}
@@ -1157,7 +1177,7 @@ public class EpochBeagleTreeLikelihood extends EpochTreeLikelihood {
 		models[endEpoch].getTransitionProbabilities(node, startTime, endTime, jointBranchRate, p2);
 		if (startEpoch != endEpoch) {
 			System.arraycopy(probabilities, 0, p3, 0, probabilities.length);
-			multiplyMatrices(p2, p3, probabilities);
+			multiplyMatrices(p3, p2, probabilities);
 		} else {
 			System.arraycopy(p2, 0, probabilities, 0, probabilities.length);
 		}

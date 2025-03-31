@@ -19,11 +19,12 @@ import beast.base.evolution.tree.Node;
 import beast.base.inference.parameter.BooleanParameter;
 import beast.base.inference.parameter.RealParameter;
 import beast.base.inference.util.InputUtil;
+import resub.math.ResubMathUtil;
 
 @Description("A special case of resub where there are just 2 epochs")
 public class SingleTransitionResub extends SubstitutionModel.Base implements Loggable {
 	
-	final private static boolean EXPAND_FREQS_RENORM = false;
+	final private static boolean EXPAND_FREQS_RENORM = true;
 	final private String AMINO_ACIDS = "ACDEFGHIKLMNPQRSTVWY";
 	
 	
@@ -440,7 +441,7 @@ public class SingleTransitionResub extends SubstitutionModel.Base implements Log
 		for (int from = 0; from < this.nrOfStates; from++) {
 			for (int to = 0; to < this.nrOfStates; to++) {
 				
-				// Diagonal matrix, except for the row being expanded/refined, which has p1 and [2
+				// Diagonal matrix, except for the row being expanded/refined, which has p1 and p2
 				int index = this.getIndex(from, to);
 				
 				
@@ -469,6 +470,7 @@ public class SingleTransitionResub extends SubstitutionModel.Base implements Log
 		
 		
 		// Update subst model
+		freqsTopInput.doUpdate();
         this.substModelSmall.doUpdate();
 		
 		
@@ -585,7 +587,7 @@ public class SingleTransitionResub extends SubstitutionModel.Base implements Log
 			//Log.warning("XXX");
 			
 			// Psmall * transformer
-			this.multiplyMatrices(this.tmpMatrix, this.transformerMatrix, outMatrix);
+			ResubMathUtil.multiplyMatrices(this.tmpMatrix, this.transformerMatrix, outMatrix, this.nrOfStates);
 			tidyAndValidateProbs(outMatrix, "multiplied matrix 1 threshold", false);
 			
 		}else {
@@ -593,11 +595,11 @@ public class SingleTransitionResub extends SubstitutionModel.Base implements Log
 			//Log.warning("YYY");
 			
 			// Psmall * transformer
-			this.multiplyMatrices(this.tmpMatrix, this.transformerMatrix, this.tmpMatrix3);
+			ResubMathUtil.multiplyMatrices(this.tmpMatrix, this.transformerMatrix, this.tmpMatrix3, this.nrOfStates);
 			tidyAndValidateProbs(tmpMatrix3, "multiplied matrix 1", false);
 			
 			// (Psmall * transformer) * Plarge
-			this.multiplyMatrices(this.tmpMatrix3, this.tmpMatrix2, outMatrix);
+			ResubMathUtil.multiplyMatrices(this.tmpMatrix3, this.tmpMatrix2, outMatrix, this.nrOfStates);
 			tidyAndValidateProbs(outMatrix, "multiplied matrix 2", false);
 			
 		}
@@ -608,41 +610,6 @@ public class SingleTransitionResub extends SubstitutionModel.Base implements Log
 	}
 	
 	
-	/*
-	 * Compute result = left * right
-	 */
-	public void multiplyMatrices(double[] left, double[] right, double[] result) {
-		
-		
-		int index3 = 0;
-		for (int rowNum = 0; rowNum < this.nrOfStates; rowNum ++) {
-			
-			for (int colNum = 0; colNum < this.nrOfStates; colNum ++) {
-				
-				double sum = 0;
-				
-				// Move along the columns of left and rows of right 
-				int index1 = rowNum * this.nrOfStates;
-				int index2 = colNum;
-				for (int pos = 0; pos < this.nrOfStates; pos++) {
-					double term1 = left[index1];
-					double term2 = right[index2]; 
-					//double term2 = right[index1]; // Transposed
-					sum += term1*term2;
-
-					index1 ++;
-					index2 += nrOfStates;
-					
-				}
-
-				result[index3] = sum;
-				index3 ++;
-				
-			}
-		}
-		
-		
-	}
 	
 	
 	private int getIndex(int from, int to) {

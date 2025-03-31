@@ -5,15 +5,33 @@
 
 
     <service type="beast.base.core.BEASTInterface">
+
+
+        <!-- Tested -->
         <provider classname="resub.likelihood.EpochBeagleTreeLikelihood"/>
         <provider classname="resub.substitutionmodel.SingleTransitionResub"/>
         <provider classname="resub.substitutionmodel.SVSInit"/>
         <provider classname="resub.tree.MRCATime"/>
         <provider classname="resub.math.NodeHeightDiff"/>
+        <provider classname="resub.math.MRCATime"/>
         <provider classname="resub.math.BooleanPoissonDistribution"/>
         <provider classname="resub.math.ResubTransitionHeightPrior"/>
         <provider classname="resub.logger.RateLogger"/>
         <provider classname="resub.operator.DoubleRootScaler"/>
+
+
+        <!-- In development -->
+        <provider classname="resub.substitutionmodel.epochs.AlphabetEpochs"/>
+        <provider classname="resub.math.AlphabetEpochPrior"/>
+        <provider classname="resub.operator.EpochStateUniform"/>
+        <provider classname="resub.operator.AlphaBetaCascadeOperator"/>
+        <provider classname="resub.operator.UniformOperatorVariable"/>
+        <provider classname="resub.operator.AlphaBetaSwapper"/>
+        <provider classname="resub.substitutionmodel.MultiTransitionResub"/>
+
+
+
+
     </service>
 
 
