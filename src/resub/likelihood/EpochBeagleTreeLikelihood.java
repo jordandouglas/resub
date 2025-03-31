@@ -852,6 +852,15 @@ public class EpochBeagleTreeLikelihood extends EpochTreeLikelihood {
         		}
         	}
         	
+        	
+        	
+			//System.out.println(this.getClass().getSimpleName() + " " + epochDatesArray[0]);
+//          System.out.print("epoch freqs: ");
+//          for (int i = 0; i < frequencies.length; i ++) {
+//          	System.out.print(frequencies[i] + ",");
+//          }
+//          System.out.println();
+        	
 
 
             int cumulateScaleBufferIndex = Beagle.NONE;

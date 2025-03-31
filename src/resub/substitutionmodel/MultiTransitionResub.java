@@ -131,11 +131,16 @@ public class MultiTransitionResub extends SubstitutionModel.Base implements Logg
 		}
 		
 		
+		//System.out.println(this.getClass().getSimpleName() + " " + bottomEpochStartAge);
+		
+		
 		// For each epoch, ranked in decreasing order of age. rank=-1 is the present day full alphabet
 		// We will start from the oldest epoch and work our way down
 		// This means that the probability matrices are chained together in the forward time direction
 		boolean outMatrixInitialised = false;
 		for (int epochRank = nOldActiveEpochs-1; epochRank >= -1; epochRank--) {
+			
+			//System.out.println(this.getClass().getSimpleName() + " " + epochRank);
 			
 			
 			int indexBeingDropped = (epochRank == -1) ? -1 : this.alphabetEpochs.getEpochByRank(epochRank).getBeta();
@@ -149,7 +154,7 @@ public class MultiTransitionResub extends SubstitutionModel.Base implements Logg
 			}
 			
 			// Does this branch cross this epoch?
-			boolean lineageCrossesEpoch = (startAge > epochEndAge && endAge < epochStartAge);
+			boolean lineageCrossesEpoch = (startAge >= epochEndAge && endAge < epochStartAge);
 			if (!lineageCrossesEpoch) continue;
 			
 			
@@ -158,7 +163,7 @@ public class MultiTransitionResub extends SubstitutionModel.Base implements Logg
 			double h1 = Math.max(endAge, epochEndAge);
 			
 			
-			// Get the substitution model and transformer for this epoch
+			// Get the substitution model and transformer matrix for this epoch
 			GeneralSubstitutionModel substModelEpoch = epochRank == -1 ? this.substModel : alphabetEpochs.getEpochSubstitionModelByRank(epochRank);
 			
 			//System.out.println("reduced rate matrix:");
@@ -176,7 +181,7 @@ public class MultiTransitionResub extends SubstitutionModel.Base implements Logg
 			//ResubMathUtil.printProbabilityMatrix(tmpMatrixEpoch, this.nrOfStates);
 			
 			// Does this branch have a second epoch?
-			boolean thereIsAnotherEpoch = epochRank >= 0 && endAge < epochEndAge;
+			boolean thereIsAnotherEpoch = epochRank >= 0 && endAge <= epochEndAge + 1e-16;
 			if (thereIsAnotherEpoch) {
 				
 				// Multiply by transporter matrix
