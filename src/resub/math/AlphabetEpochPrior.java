@@ -68,6 +68,12 @@ public class AlphabetEpochPrior extends Distribution {
 	    	}
 	    	
 	    	
+	    	// Ensure that all amino acid constraints are satisfied
+	    	if (!epochs.constraintsAreSatisfied()) {
+	    		logP = Double.NEGATIVE_INFINITY;
+    			return logP;
+	    	}
+	    	
 	    	for(int i = 0; i < epochList.size(); i ++) {
 	    		
 	    		

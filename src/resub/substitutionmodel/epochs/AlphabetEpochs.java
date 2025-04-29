@@ -34,6 +34,9 @@ public class AlphabetEpochs extends CalculationNode implements Loggable, Functio
 	final public Input<IntegerParameter> indicatorInput = new Input<>("indicator", "Model indicator, 0=no merging, 1=refinement, 2=expand left, 3=expand right", Input.Validate.REQUIRED);
 	final public Input<Function> upperInitInput = new Input<>("upperInit", "Upper limit of initial values for te", Input.Validate.OPTIONAL);
 	
+	final public Input<List<AlphaBetaConstraint>> constraintsInput = new Input<>("constraint", "ensures that at least one epoch contains these two states", new ArrayList<>());
+	
+	
 	
 	// Substitution model (optional)
 	final public Input<GeneralSubstitutionModel> substModelInput = new Input<>("substModel", "An amino acid substitution model that applies to the youngest epoch");
@@ -50,10 +53,10 @@ public class AlphabetEpochs extends CalculationNode implements Loggable, Functio
 	int nepochs;
 	int nOldEpochs;
 	final DataType datatype = new Aminoacid();
-	final String states = "ACDEFGHIKLMNPQRSTVWY";
+	final static String states = "ACDEFGHIKLMNPQRSTVWY";
 	List<String> stateList;
 	List<AlphabetEpoch> epochs = new ArrayList<>();
-
+	List<AlphaBetaConstraint> constraints;
 	
 	@Override
 	public void initAndValidate() {
@@ -71,7 +74,7 @@ public class AlphabetEpochs extends CalculationNode implements Loggable, Functio
 		
 		// List of amino acids
 		stateList = Arrays.asList(states.split(""));
-		
+		this.constraints = constraintsInput.get();
 		
 		// Validate substitution model and frequencies, if provided
 		if (substModelInput.get() != null) {
@@ -121,21 +124,27 @@ public class AlphabetEpochs extends CalculationNode implements Loggable, Functio
 		betaInput.get().setUpper(nstates-1); 
 		
 		
-		Log.warning("Getting upper" + indicatorInput.get().getUpper());
+		//Log.warning("Getting upper " + indicatorInput.get().getUpper() + " " + this.nOldEpochs);
 		
 		
 		// Initialise values
 		if (needsInit){
 			
 			
+			// Ensure that no 2 epochs have the same beta
+			List<Integer> availableBetas = new ArrayList<>();
+			for (int i = 0; i < this.stateList.size(); i ++) availableBetas.add(i);
+			
 			
 			double pactive = pactiveInput.get() == null ? 0.5 : pactiveInput.get().getArrayValue();
-			double prefine = (prefineInput.get() == null ? 0.5 : prefineInput.get().getArrayValue()) * pactive;
+			double prefine = prefineInput.get() == null ? 0.5 : prefineInput.get().getArrayValue();
 			
 			double dt = upperInitInput.get() == null ? 1.0 : upperInitInput.get().getArrayValue()/(this.nOldEpochs+1.0);
+			int constraintNumber = 0;
+			
 			for(int i = 0; i < this.nOldEpochs; i ++) {
 				
-				// Stagger the epoch ages
+				// Stagger the epoch ages - going backwards in time
 				teInput.get().setValue(i, (i+1)*dt);
 				
 				// Random resub state to start with
@@ -143,11 +152,28 @@ public class AlphabetEpochs extends CalculationNode implements Loggable, Functio
 				
 				// Initialise randomly based on model parameters
 				int indicator = Randomizer.nextFloat() >= pactive ? 0 : Randomizer.nextFloat() <= prefine ? 1 : 2;
+				Log.warning("setting to " + indicator);
 				indicatorInput.get().setValue(i, indicator);
 				
 				// Ensure this is a valid state
-				alphaInput.get().setValue(i, 0); // Set all alphas to 0
-				betaInput.get().setValue(i, i+1); // Set each beta to a different index
+				if (constraintNumber < this.constraints.size()) {
+					AlphaBetaConstraint constraint = this.constraints.get(constraintNumber);
+					alphaInput.get().setValue(i, constraint.getState1());
+					betaInput.get().setValue(i, constraint.getState2());
+					availableBetas.remove(constraint.getState2());
+					constraintNumber++;
+				}else {
+					
+					// Set alpha and beta to random states such that alpha != beta
+					int k = Randomizer.nextInt(availableBetas.size());
+					int beta = availableBetas.remove(k);
+					betaInput.get().setValue(i, beta); // Set each beta to a different index
+					
+					// Pick an alpha from the remaining ones
+					k = Randomizer.nextInt(availableBetas.size());
+					alphaInput.get().setValue(i, availableBetas.get(k)); 
+				}
+				
 			}
 		}
 		
@@ -164,6 +190,8 @@ public class AlphabetEpochs extends CalculationNode implements Loggable, Functio
 		update();
 		
 	}
+	
+
 	
 	public boolean update() {
 		
@@ -201,6 +229,7 @@ public class AlphabetEpochs extends CalculationNode implements Loggable, Functio
 				
 				String alphaState = stateListLarge.get(epoch.getAlpha());
 				String betaState = stateListLarge.get(epoch.getBeta());
+				
 				
 				// Invalid state
 				if (alphaState.equals(AlphabetEpoch.BLANK_STATE) || betaState.equals(AlphabetEpoch.BLANK_STATE)) {
@@ -243,8 +272,8 @@ public class AlphabetEpochs extends CalculationNode implements Loggable, Functio
 						ratesCurrentEpoch = removeState(epoch.getBeta(), ratesCurrentEpoch, stateListSmall.size());
 						
 						// Update frequencies
-						//freqsCurrentEpoch = removeFrequency(epoch.getBeta(), freqsCurrentEpoch);
-						freqsCurrentEpoch = mergeFrequencies(epoch.getAlpha(), epoch.getBeta(), freqsCurrentEpoch);
+						freqsCurrentEpoch = removeFrequency(epoch.getBeta(), freqsCurrentEpoch);
+						//freqsCurrentEpoch = mergeFrequencies(epoch.getAlpha(), epoch.getBeta(), freqsCurrentEpoch);
 						
 						// Remove a state from the state list
 						stateListSmall.set(stateListSmall.indexOf(betaState), AlphabetEpoch.BLANK_STATE);
@@ -674,6 +703,22 @@ public class AlphabetEpochs extends CalculationNode implements Loggable, Functio
 
 	public void requestUpdate() {
 		this.needsUpdate = true;
+	}
+	
+	
+	/**
+	 * Are the alpha/beta constraints satisfied?
+	 * @return
+	 */
+	public boolean constraintsAreSatisfied(){
+		
+		
+		for (AlphaBetaConstraint constraint : this.constraints) {
+			if (!constraint.isSatisfied(this)) return false;
+		}
+		
+		return true;
+		
 	}
 	
 	

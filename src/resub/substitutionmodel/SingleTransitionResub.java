@@ -4,6 +4,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import beast.base.core.Citation;
 import beast.base.core.Description;
 import beast.base.core.Input;
 import beast.base.core.Log;
@@ -22,8 +23,12 @@ import beast.base.inference.util.InputUtil;
 import resub.math.ResubMathUtil;
 
 @Description("A special case of resub where there are just 2 epochs")
+@Citation(value = "Douglas, J., Bouckaert, R., Carter Jr, C. W., & Wills, P. R. (2025). Reduced amino acid substitution matrices find traces of ancient coding alphabets in modern day proteins. bioRxiv, 2025-02.",
+year = 2025, firstAuthorSurname = "Douglas")
+
 public class SingleTransitionResub extends SubstitutionModel.Base implements Loggable {
 	
+	//fix this
 	final private static boolean EXPAND_FREQS_RENORM = true;
 	final private String AMINO_ACIDS = "ACDEFGHIKLMNPQRSTVWY";
 	
@@ -50,6 +55,9 @@ public class SingleTransitionResub extends SubstitutionModel.Base implements Log
 	
 	final public Input<String> state1Input = new Input<>("state1", "one of the two states to merge", Input.Validate.REQUIRED);
 	final public Input<String> state2Input = new Input<>("state2", "one of the two states to merge", Input.Validate.REQUIRED);
+
+	
+	final public Input<BooleanParameter> saltationInput = new Input<>("saltation", "all other characters instantaneously change to the new letter with a low probability? (default true)", Input.Validate.OPTIONAL);
 	
 	
 	boolean needsUpdate;
@@ -188,6 +196,10 @@ public class SingleTransitionResub extends SubstitutionModel.Base implements Log
         if (InputUtil.isDirty(substModelInput)) return true;
         if (InputUtil.isDirty(frequenciesInput)) return true;
         if (InputUtil.isDirty(transitionFreqInput)) return true;
+        
+        if (InputUtil.isDirty(saltationInput)) return true;
+        
+        
         return false;
 	}
 	
@@ -392,7 +404,7 @@ public class SingleTransitionResub extends SubstitutionModel.Base implements Log
 				if (!EXPAND_FREQS_RENORM) {
 					double f1 = freqsBottom[state1];
 					double f2 = freqsBottom[state2];
-					frequenciesTop[state1] = f1 + f2;
+					frequenciesTop[state2] = f1 + f2;
 				}else {
 					double f2 = freqsBottom[state2];
 					frequenciesTop[state2] = f2;
@@ -414,8 +426,11 @@ public class SingleTransitionResub extends SubstitutionModel.Base implements Log
 			freqSum += frequenciesTop[i];
 		}
 		for (int i = 0; i < frequenciesTop.length; i ++) {
+			
+			
 			frequenciesTop[i] = frequenciesTop[i] / freqSum;
 			freqsTopRealParameterInput.setValue(i, frequenciesTop[i]);
+			
 		}
 		
 
@@ -435,7 +450,19 @@ public class SingleTransitionResub extends SubstitutionModel.Base implements Log
 			p2 = freqsBottom[stateBeingDropped];
 			double psum = p1 + p2;
 			p1 = p1 / psum;
-			p2 = p2 / psum;
+			p2 = 1 - p1;
+		}
+		
+		
+		
+		boolean saltation = saltationInput.get() == null ? true : saltationInput.get().getValue();
+		double pSaltation1,pSaltation2;
+		if (!saltation) {
+			pSaltation1 = 0;
+			pSaltation2 = 0;
+		}else {
+			pSaltation1 = isRefining ? freqsBottom[stateBeingKept] : 0;
+			pSaltation2 = freqsBottom[stateBeingDropped];
 		}
 		
 		for (int from = 0; from < this.nrOfStates; from++) {
@@ -445,33 +472,90 @@ public class SingleTransitionResub extends SubstitutionModel.Base implements Log
 				int index = this.getIndex(from, to);
 				
 				
-				if (from != stateBeingKept && from == to) {
-					this.transformerMatrix[index] = 1;
+				// This row has all 0's except for the p1 and p2
+				if (from == stateBeingKept) {
+					if (to == stateBeingKept) {
+						this.transformerMatrix[index] = p1;
+					}
+					
+					else if (to == stateBeingDropped) {
+						this.transformerMatrix[index] = p2;
+					}
+					
+					else {
+						this.transformerMatrix[index] = 0;
+					}
+					
 				}
 				
-				else if (from == stateBeingKept && to == stateBeingKept) {
-					this.transformerMatrix[index] = p1;
+				// This is a dummy row with all zeros and 1 on the diagonal
+				else if (from == stateBeingDropped) {
+					
+					
+					if (from == to) {
+						this.transformerMatrix[index] = 1;
+					}
+					
+					else {
+						this.transformerMatrix[index] = 0;
+					}
+					
+					
+					
 				}
 				
-				else if (from == stateBeingKept && to == stateBeingDropped) {
-					this.transformerMatrix[index] = p2;
+				
+				// Every other row
+				else if (from != stateBeingKept && from != stateBeingDropped) {
+					
+					if (to == stateBeingDropped) {
+						this.transformerMatrix[index] = pSaltation2; // Refinement or expansion
+					}
+					
+					
+					else if (to == stateBeingKept) {
+						this.transformerMatrix[index] = pSaltation1; // Will be non-zero for refinement, 0 otherwise
+					}
+					
+					else if (from == to) {
+						this.transformerMatrix[index] = 1 - pSaltation1 - pSaltation2;
+					}
+					
+					else {
+						this.transformerMatrix[index] = 0;
+					}
+					
 				}
 				
-				else {
-					this.transformerMatrix[index] = 0;
-				}
+				
+				
 			}
 		}
 		
-
+		
 		
 		// Set top frequencies
 		rootFrequencies = frequenciesTop;
 		
 		
+		
 		// Update subst model
-		freqsTopInput.doUpdate();
+		this.freqsTopInput.doUpdate();
         this.substModelSmall.doUpdate();
+        
+//        System.out.print(this.substModelSmall.getClass().getSimpleName() + " freqs");
+//        for (int i = 0; i < 20; i ++) {
+//        	System.out.print(this.substModelSmall.getFrequencies()[i] + ",");
+//        }
+//        System.out.println();
+//        
+//        
+//        System.out.print(this.substModelSmall.getClass().getSimpleName() + " root freqs");
+//        for (int i = 0; i < 20; i ++) {
+//        	System.out.print(rootFrequencies[i] + ",");
+//        }
+//        System.out.println();
+        
 		
 		
 	}
@@ -549,8 +633,6 @@ public class SingleTransitionResub extends SubstitutionModel.Base implements Log
 	
 		// Case 1: use vanilla subst model
 		if (!useResubInput.get().getValue() || startHeight < transitionHeight) {
-			
-			//Log.warning("ZZZ");
 			
 			this.substModel.getTransitionProbabilities(node, startHeight, endHeight, rate, outMatrix);
 			tidyAndValidateProbs(outMatrix, "full matrix 1", false);

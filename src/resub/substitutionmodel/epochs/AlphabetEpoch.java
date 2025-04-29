@@ -1,6 +1,8 @@
 package resub.substitutionmodel.epochs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import beast.base.evolution.substitutionmodel.ComplexSubstitutionModel;
@@ -172,9 +174,27 @@ public class AlphabetEpoch implements Comparable<AlphabetEpoch> {
 		return this.statesAtPrevEpoch.get(alpha);
 	}
 	
+	
+	public String getAlphaStateSorted() {
+		int alpha = this.getAlpha();
+		String s = this.statesAtPrevEpoch.get(alpha);
+		String[] parts = s.split("/");
+		Arrays.sort(parts);
+		return String.join("/", parts);
+		
+	}
+	
 	public String getBetaState() {
 		int beta = this.getBeta();
 		return this.statesAtPrevEpoch.get(beta);
+	}
+	
+	public String getBetaStateSorted() {
+		int beta = this.getBeta();
+		String s = this.statesAtPrevEpoch.get(beta);
+		String[] parts = s.split("/");
+		Arrays.sort(parts);
+		return String.join("/", parts);
 	}
 	
 	public String getTransitionString() {
@@ -183,12 +203,22 @@ public class AlphabetEpoch implements Comparable<AlphabetEpoch> {
 			return "null";
 		}
 		
+		
+		// Sort the strings so that there is just one representation of a given state
+		String a = getAlphaStateSorted();
+		String b = getBetaStateSorted();
+		if (a.compareTo(b) > 0) {
+			String c = a;
+			a = b;
+			b = c;
+		}
+		
 		if (this.getIndicator() == 1) {
-			return getAlphaState() + "/" + getBetaState() + " -> " + getAlphaState() + "+" + getBetaState();
+			return a + "/" + b + " -> " + a + "+" + b;
 		}
 		
 		if (this.getIndicator() == 2) {
-			return getAlphaState() + " -> " + getAlphaState() + "+" + getBetaState();
+			return a + " -> " + a + "+" + b;
 		}
 		
 		

@@ -1,6 +1,8 @@
 package resub.math;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import beast.base.core.Description;
 import beast.base.core.Function;
@@ -10,12 +12,11 @@ import beast.base.core.Input.Validate;
 import beast.base.evolution.tree.MRCAPrior;
 import beast.base.inference.CalculationNode;
 
-@Description("Difference in node height")
+@Description("Average node height difference")
 public class NodeHeightDiff extends CalculationNode implements Loggable, Function {
 	
 	
-	public final Input<MRCAPrior> mrcaPrior1Input = new Input<>("clade1", "the clade", Validate.REQUIRED);
-	public final Input<MRCAPrior> mrcaPrior2Input = new Input<>("clade2", "the clade", Validate.REQUIRED);
+	public final Input<List<MRCAPrior>> mrcaPriorInput = new Input<>("clade", "a clade", new ArrayList<>());
 
 	@Override
 	public void initAndValidate() {
@@ -30,9 +31,26 @@ public class NodeHeightDiff extends CalculationNode implements Loggable, Functio
 
 	@Override
 	public double getArrayValue(int dim) {
-		double h1 = mrcaPrior1Input.get().getCommonAncestor().getHeight();
-		double h2 = mrcaPrior2Input.get().getCommonAncestor().getHeight();
-		return h1 - h2;
+		
+		
+		double meanDiff = 0;
+		int nclades = mrcaPriorInput.get().size();
+		for (int i = 0; i < nclades; i ++) {
+			for (int j = 0; j < nclades; j ++) {
+				if (i == j) continue;
+				
+				double h1 = mrcaPriorInput.get().get(i).getCommonAncestor().getHeight();
+				double h2 = mrcaPriorInput.get().get(j).getCommonAncestor().getHeight();
+				double diff = Math.abs(h1 - h2);
+				meanDiff += diff;
+				
+			}
+		}
+		
+		meanDiff = meanDiff / (nclades*(nclades-1));
+		
+		
+		return meanDiff;
 	}
 
 	@Override
