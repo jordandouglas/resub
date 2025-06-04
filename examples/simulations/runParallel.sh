@@ -1,6 +1,6 @@
 #!/bin/bash
 
-nthreads=10
+nthreads=4
 
 
 rm templates/rep*/*.log

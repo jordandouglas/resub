@@ -38,29 +38,13 @@
     
     
 <parameter id="lambda" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
-<parameter id="r0" spec="parameter.RealParameter" name="stateNode" lower="1">2</parameter>
-
-
 <parameter id="gammaShape" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
 <parameter id="aa.frequencies" spec="parameter.RealParameter" name="stateNode" lower="0" upper="1" dimension="20">0.05</parameter>
-<!-- <parameter id="aa.rates" spec="parameter.RealParameter" name="stateNode" lower="0" upper="1" dimension="190">1</parameter> -->
-
 <parameter id="branchRates" spec="parameter.RealParameter" name="stateNode" lower="0" dimension="1">1</parameter> 
-<parameter id="spikes" spec="parameter.RealParameter" name="stateNode" lower="0" dimension="1">1</parameter> 
 <parameter id="clockSD" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
-<parameter id="spikeShape" spec="parameter.RealParameter" name="stateNode" lower="0.2">1.0</parameter>
-<parameter id="spikeMean" spec="parameter.RealParameter" name="stateNode" lower="0">0.01</parameter>
-
-
-<!-- <parameter id="useResub" spec="parameter.BooleanParameter" name="stateNode">true</parameter>
-<parameter id="aaRefine" spec="parameter.BooleanParameter" name="stateNode">true</parameter>
-<parameter id="aaExpand" spec="parameter.BooleanParameter" name="stateNode">false</parameter> -->
-
 <parameter id="transitionPi" spec="parameter.RealParameter" lower="0.0" upper="1.0" name="stateNode">0.5</parameter>
 <parameter id="transitionHeight" spec="parameter.RealParameter" lower="0.0" upper="1.0" name="stateNode">0.5</parameter>
 
-
-<parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">true</parameter>
 
 
 
@@ -79,23 +63,19 @@
 
 
 
-        <distribution id="BirthDeathStubSimulator" countOriginStubs="false" nstubsPerBranch="@nstubs.branch" spec="gammaspike.tree.BirthDeathStubSimulator" removeStubs="true" ntaxa="20" r0="@r0" birthDiffRate="@lambda" samplingProportion="0" tree="@tree"/>
+        <distribution id="YuleModel" spec="beast.base.evolution.speciation.YuleModel" birthDiffRate="@lambda" tree="@tree"/>
 
 
 
-     <!--    <prior name="distribution" x="@aa.rates">
-            <LogNormal name="distr" meanInRealSpace="true" M="1" S="1"/>
-         </prior> -->
+         <prior id="transitionPi.prior" name="distribution" x="@transitionPi">
+                <Beta alpha="2" beta="2" name="distr" />
+        </prior>
 
 
          <prior name="distribution" x="@lambda">
             <LogNormal  name="distr" meanInRealSpace="true" M="2" S="0.2"/>
          </prior>
 
-
-        <prior name="distribution" x="@r0">
-            <Exponential  name="distr" mean="5" offset="1"/>
-         </prior>
 
 
         <prior name="distribution" x="@gammaShape">
@@ -108,35 +88,18 @@
             </Dirichlet>
          </prior> 
 
-         <prior id="transitionPi.prior" name="distribution" x="@transitionPi">
-                <Beta alpha="5" beta="5" name="distr" />
-        </prior>
 
-        <distribution spec="beastlabs.math.distributions.BetaRange" x="@transitionHeight" lower="0" upper="@treeHeight" alpha="6" beta="2"/>
+        <distribution spec="resub.math.BetaRange" x="@transitionHeight" lower="0" alpha="2" beta="2">
+            <upper spec="beast.base.evolution.tree.TreeHeightLogger" tree="@tree"/>
+        </distribution>
 
          <prior name="distribution" x="@clockSD">
             <Gamma name="distr" alpha="5" beta="0.05"/>
          </prior> 
 
 
-         <prior name="distribution" x="@spikeMean">
-            <LogNormal  name="distr" meanInRealSpace="true" M="0.01" S="1.2"/>
-         </prior>
-
-
-         <prior name="distribution" x="@spikeShape">
-           <LogNormal  name="distr" meanInRealSpace="true" M="2" S="0.5"/>
-         </prior>
-
-         <prior name="distribution" spec="gammaspike.distribution.BranchSpikePrior" nstubs="@nstubs.branch" spikes="@spikes" shape="@spikeShape" tree="@tree">
-         </prior>
-
          <prior name="distribution" spec="gammaspike.distribution.BranchRatePrior" branchRates="@branchRates" tree="@tree" sigma="@clockSD"/>
 
-   <!--      <distribution spec="gammaspike.distribution.BinomialPrior" id="useResub.prior" x="@useResub" p="0.5" />
-        <distribution spec="gammaspike.distribution.BinomialPrior" id="aaRefine.prior" x="@aaRefine" p="0.5" />
-        <distribution spec="gammaspike.distribution.BinomialPrior" id="aaExpand.prior" x="@aaExpand" p="0.5" /> -->
-                    
     
     </distribution>
 
@@ -144,59 +107,26 @@
         <logger id="tracelog" spec="Logger" fileName="truth.log" logEvery="1" model="@posterior" sort="smart">
            
             <log idref="lambda"/>
-            <log idref="r0"/>
             <log id="ntaxa" spec="gammaspike.logger.TaxonCountLogger" tree="@tree"/>
-
-
-
             <log idref="gammaShape"/>
             <log idref="aa.frequencies"/>
-            <log idref="transitionPi"/>
             <log idref="transitionHeight"/>
-
-
             <log idref="clockSD"/>
-            <log idref="spikeMean"/>
-            <log idref="spikeShape"/>
-            <log idref="useSpikeModel" />
-<!-- 
-            <log idref="useResub" />
-            <log idref="aaRefine" />
-            <log idref="aaExpand" /> -->
-
-            
+            <log idref="transitionPi" />
             <log id="treeHeight" spec="beast.base.evolution.tree.TreeStatLogger" tree="@tree"/>
 
-            <log idref="BirthDeathStubSimulator"/>
-            <!-- <log idref="branchRates"/> -->
-            <!-- <log idref="spikes"/> -->
         </logger>
 
 
-        <!--
-        <logger id="speciesTreeLogger" spec="Logger" fileName="protein.trees" logEvery="1" mode="tree">
-            <log id="SpeciesTreeLoggerX" spec="starbeast3.core.SpeciesTreeLogger" popSize="@popSize" speciesTreePrior="@SpeciesTreePopSize.Species" tree="@Tree.t:code">
-                <treetop id="treeTopFinder" spec="beast.base.evolution.speciation.TreeTopFinder">
-                    <plate var="n" range="data">
-                        <tree idref="Tree.t:$(n)"/>
-                    </plate>
-                </treetop>
-            </log>
-        </logger>
-    -->
 
         <logger id="screenlog" spec="Logger" logEvery="1">
             <log idref="lambda"/>
-            <log idref="r0"/>
-            <log idref="spikeMean"/>
         </logger>
 
 
         <logger fileName="truth.trees" id="treelog.t:aaRS" logEvery="1" mode="tree">
              <log spec="beast.base.evolution.TreeWithMetaDataLogger" tree="@tree"> 
-                <metadata idref="nstubs.branch" />
                 <metadata idref="branchRates" />
-                <metadata idref="spikes" />
             </log>
         </logger>
 

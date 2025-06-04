@@ -1,6 +1,6 @@
 #!/bin/bash
 
-END=200
+END=100
 
 
 cd templates

@@ -59,6 +59,9 @@ aaRefine = rep(c(TRUE, TRUE, FALSE, FALSE), NSIMS/4)
 aaExpand = rep(c(TRUE, FALSE), each=NSIMS/2)
 
 
+#useResub = rep(c(TRUE, TRUE), NSIMS/2)
+
+
 # Prepare folders
 for (simnum in 1:NSIMS){
 
@@ -108,7 +111,7 @@ for (simnum in 1:NSIMS){
 
 
 	# Resub state 1 and 2
-	cherries = c("WY", "EQ", "IV", "DN", "DK", "FH", "AG", "SG", "PT")
+	cherries = c("WY", "EQ", "IV", "DN", "DK", "FH", "AG", "SG", "PT", "CF", "LS", "NQ", "DE", "FY", "TV")
 	cherry = sample(cherries, 1)
 	JSON[["state1"]] = strsplit(cherry, "")[[1]][1]
 	JSON[["state2"]] = strsplit(cherry, "")[[1]][2]

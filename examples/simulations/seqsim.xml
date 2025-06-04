@@ -19,12 +19,9 @@
 
 
 <parameter id="branchRates" spec="beast.base.inference.parameter.RealParameter">1</parameter>
-<parameter id="spikes" spec="beast.base.inference.parameter.RealParameter">1</parameter>
-<parameter id="nstubsPerBranch" spec="beast.base.inference.parameter.IntegerParameter">0</parameter>
 <parameter id="indicators" spec="beast.base.inference.parameter.IntegerParameter">0</parameter>
 
 
-<parameter id="transitionPi" spec="parameter.RealParameter" lower="0.0" upper="1.0" name="stateNode">$(transitionPi)</parameter>
 <parameter id="transitionHeight" spec="parameter.RealParameter" lower="0.0" name="stateNode">$(transitionHeight)</parameter>
 <parameter id="useResub" spec="parameter.BooleanParameter" name="stateNode">$(useResub)</parameter>
 <parameter id="aaRefine" spec="parameter.BooleanParameter" name="stateNode">$(aaRefine)</parameter>
@@ -39,18 +36,19 @@
 </parameter>
 
 <!-- <frequencies id="aa.frequencies" spec="RealParameter" lower="0" upper="1">$(aa.frequencies)</frequencies> -->
+<!-- pi="@transitionPi" -->
 <frequencies id="aa.frequencies" spec="parameter.RealParameter" lower="0" upper="1">0.07611 0.01206 0.04293 0.07649 0.05826 0.06448 0.02521 0.0684 0.05763 0.09824 0.02922 0.03194 0.03257 0.03192 0.06107 0.0547 0.04757 0.06342 0.02267 0.04511</frequencies>
 <frequencies id="aa.freqs" spec='Frequencies' frequencies="@aa.frequencies" />
 
 <parameter id="substModel.indicator" spec="parameter.BooleanParameter" name="stateNode" dimension="190">true</parameter>
-<substModel id="resubModel" spec="resub.substitutionmodel.SingleTransitionResub" useResub="@useResub" pi="@transitionPi" state1="$(state1)" state2="$(state2)" h1="@transitionHeight" frequencies="@aa.freqs" refine="@aaRefine" expand="@aaExpand" substModel="@svs.substModel" /> 
+<substModel id="resubModel" spec="resub.substitutionmodel.SingleTransitionResub" useResub="@useResub"  state1="$(state1)" state2="$(state2)" h1="@transitionHeight" frequencies="@aa.freqs" refine="@aaRefine" expand="@aaExpand" substModel="@svs.substModel" pi="$(transitionPi)" /> 
 
 
-<substModel id="svs.substModel" spec="beastclassic.evolution.substitutionmodel.SVSGeneralSubstitutionModel" rates="@aa.rates" symmetric="true" rateIndicator="@substModel.indicator">
+<substModel id="svs.substModel" spec="resub.substitutionmodel.SVSGeneralSubstitutionModel" rates="@aa.rates" symmetric="true" rateIndicator="@substModel.indicator">
     <frequencies idref="aa.freqs" />
 </substModel>
 
-<data id="simulatedData" spec='beastfx.app.seqgen.SimulatedAlignment' sequencelength="100" outputFileName="simulated.xml" >
+<data id="simulatedData" spec='beastfx.app.seqgen.SimulatedAlignment' sequencelength="50" outputFileName="simulated.xml" >
 
 	<userDataType idref="aaDataType" />
 
@@ -76,12 +74,9 @@
    </siteModel>
 
 
-	<!--  -->
-   <branchRateModel id="clockModel" spec="gammaspike.clockmodel.PunctuatedRelaxedClockModel" spikeMean="$(spikeMean)" indicator="$(useSpikeModel)" relaxed="true" clock.rate="1.0" nstubsPerBranch="@nstubsPerBranch" tree="@simulatedTree" spikes="@spikes" rates="@branchRates" parseFromTree="true" />
-
-
-    <!-- <branchRateModel id="clockModel" spec="beast.base.evolution.branchratemodel.StrictClockModel"  clock.rate="1.0" /> -->
-
+   <branchRateModel id="clockModel" spec="beast.base.evolution.branchratemodel.UCRelaxedClockModel" clock.rate="1.0" tree="@simulatedTree" rates="@branchRates">
+   		<LogNormal id="ORCLogNormalDistributionModel.c:$(n)" M="1" S="$(clockSD)" meanInRealSpace="true" name="distr" />
+   </branchRateModel>
 
 
 </data>
@@ -127,8 +122,6 @@
 
     <logger id="treelog" spec="Logger" fileName="simulated.trees" logEvery="1" mode="tree">
         <log spec="beast.base.evolution.TreeWithMetaDataLogger" sort="false" tree="@simulatedTree">
-        	<metadata idref="nstubsPerBranch" />
-        	<metadata idref="spikes" />
         	<metadata idref="branchRates" />
         </log>
     </logger> 
