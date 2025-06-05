@@ -3,10 +3,11 @@
 
 
 
+<data id="class1" spec="FilteredAlignment" filter="1,71,106-169,240-290,370,374,404,448,452,469-471,482-491,493" data="@class1.full" />
+<data id="class2" spec="FilteredAlignment" filter="7-42,75-91,118-119,123,130,137,139,151-153,159-174,191,203-206,217-230,235,240-253,260-270" data="@class2.full" />
 
 
-
-<lower id="$(focalPrior).height" spec="resub.tree.MRCATime" clade="@$(focalPrior)" />
+<lower id="$(focalPrior).height" spec="resub.math.MRCATime" clade="@$(focalPrior)" />
 
 
 
@@ -1136,8 +1137,6 @@ name="alignment">
 
     </data>
 
-    <data id="class1" spec="FilteredAlignment" filter="1,71,106-169,240-290,370,374,404,448,452,469-471,482-491,493" data="@class1.full" />
-    <data id="class2" spec="FilteredAlignment" filter="7-42,75-91,118-119,123,130,137,139,151-153,159-174,191,203-206,217-230,235,240-253,260-270" data="@class2.full" />
 
     <map name="Uniform" >beast.base.inference.distribution.Uniform</map>
 
@@ -1175,6 +1174,11 @@ name="alignment">
 
 
 
+
+
+
+
+
 <parameter id="mitoM" spec="parameter.RealParameter" name="stateNode">1.43</parameter>
 <parameter id="mitoS" spec="parameter.RealParameter" name="stateNode">0.0589</parameter>
 
@@ -1193,9 +1197,11 @@ name="alignment">
 <parameter id="rootM" spec="parameter.RealParameter" name="stateNode">4.49</parameter>
 <parameter id="rootS" spec="parameter.RealParameter" name="stateNode">0.00375</parameter>
 
- <substModel id="resubModel" spec="resub.substitutionmodel.SingleTransitionResub" useResub="@useResub"  state1="$(state1)" state2="$(state2)" h1="@transitionHeight">  
 
-             <!-- <substModel idref="OBAMA_substmodel.s:aaRS" /> -->
+
+
+ <substModel id="resubModel" spec="resub.substitutionmodel.SingleTransitionResub" useResub="@useResub"  state1="$(state1)" state2="$(state2)" h1="@transitionHeight" saltation="@saltation" pi="@transitionPi" >  
+
              <substModel idref="svs.substModel" />
             <frequencies spec='Frequencies'>
                 <frequencies idref="OBAMA_frequencies.s:aaRS"/>
@@ -1206,9 +1212,8 @@ name="alignment">
 
 
 
- <substModel id="resubModel.clone" spec="resub.substitutionmodel.SingleTransitionResub" useResub="@useResub"  state1="$(state1)" state2="$(state2)" h1="@transitionHeight">  
+ <substModel id="resubModel.clone" spec="resub.substitutionmodel.SingleTransitionResub" useResub="@useResub"  state1="$(state1)" state2="$(state2)" h1="@transitionHeight" saltation="@saltation" pi="@transitionPi"  >  
 
-             <!-- <substModel idref="OBAMA_substmodel.s:aaRS" /> -->
              <substModel idref="svs.substModel" />
             <frequencies spec='Frequencies'>
                 <frequencies idref="OBAMA_frequencies.s:aaRS"/>
@@ -1216,6 +1221,8 @@ name="alignment">
             <refine idref="aaRefine" />
             <expand idref="aaExpand" />
     </substModel>
+
+
 
 
     <run id="mcmc" spec="MCMC" chainLength="100000000">
@@ -1234,7 +1241,7 @@ name="alignment">
             </tree>
 
 
-            
+         
 
             <parameter id="aa.rates" spec="parameter.RealParameter" name="stateNode" dimension="190">
                4.432 0.3791 0.5617 0.3362 2.015 0.4722 0.2673 0.4467 0.321 1.228 0.3354 0.8666 0.6356 0.3921 3.992 1.748 2.319 0.1529 0.5584 0.2803 0.1374 0.9365 0.72 0.5864 0.5093 0.1167 1.795 1.164 2.392 0.5706 0.3118 0.5543 3.314 2.908 4.416 0.5549 0.7716 3.573 0.01 0.9316 0.5865 0.01 0.8569 0.01 0.01 4.696 0.439 0.9639 0.2175 1.326 0.569 0.1409 0.2392 0.1486 0.1159 0.1641 0.4819 0.01 1.411 0.1136 0.08969 1.256 0.327 2.988 0.4909 0.6071 0.5711 0.2406 0.01 0.1393 0.01 0.9002 1.036 0.01 1.698 1.859 0.01 0.07376 0.01 0.07911 0.1126 0.1634 0.7343 2.039 5.874 0.2773 0.01 0.4422 0.03281 0.1001 1.566 0.2708 0.1631 0.07232 1.353 0.3508 0.01 0.09905 0.06602 0.2757 0.7037 0.2954 0.4792 4.619 0.2693 2.937 0.8973 1.689 1.271 0.3938 0.844 3.762 0.1303 3.875 3.457 0.1901 0.1478 0.3567 0.1924 0.01 0.7648 8.736 0.09717 0.2367 0.2786 0.4948 2.082 0.7338 3.489 4.43 1.33 0.8052 0.2321 0.01 0.4391 5.448 0.153 0.1993 0.5316 0.2138 0.115 0.5175 1.843 0.3811 0.479 0.2044 0.2669 2.433 0.3585 0.6762 1.537 1.743 0.7427 0.7593 0.6591 2.387 1.513 3.206 1.63 0.3433 0.09767 1.115 0.3913 0.2988 1.019 0.7811 0.4544 0.09392 0.26 1.398 1.005 1.187 0.3361 0.4068 0.3809 0.8003 0.5168 0.1538 0.3695 0.2763 5.064 0.4246 0.3724 0.2348 2.892 0.4379 0.5008 0.2431 0.5531 2.117
@@ -1244,6 +1251,11 @@ name="alignment">
             <parameter id="useResub" spec="parameter.BooleanParameter" name="stateNode">1</parameter>
             <parameter id="aaRefine" spec="parameter.BooleanParameter" name="stateNode" >true</parameter>
             <parameter id="aaExpand" spec="parameter.BooleanParameter" name="stateNode" >false</parameter>
+            <parameter id="saltation" spec="parameter.BooleanParameter" name="stateNode" >true</parameter>
+
+
+
+
             <parameter id="transitionHeight" spec="parameter.RealParameter" lower="0.0" name="stateNode">4</parameter>
             <parameter id="transitionPi" spec="parameter.RealParameter" lower="0.0" upper="1.0" name="stateNode">0.5</parameter>
 
@@ -1255,6 +1267,8 @@ name="alignment">
 
             <parameter id="lambda.class1" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
             <parameter id="r0.class1" spec="parameter.RealParameter" name="stateNode" lower="1">2</parameter>
+
+
 
 
             <parameter id="lambda.class2" spec="parameter.RealParameter" name="stateNode" lower="0">1</parameter>
@@ -1295,24 +1309,40 @@ name="alignment">
             <populationModel idref="ConstantPopulation0.t:aaRS" />
         </init>
 
-
-        <init id="SVSInitialiser" spec="resub.substitutionmodel.SVSInit" indicator="@substModel.indicator" dataType="@aaDataType">
-            <data idref="class1" />
-            <data idref="class2" />
-        </init>
-
-
         <distribution id="posterior" spec="CompoundDistribution">
             <distribution id="prior" spec="CompoundDistribution">
 
 
             	<!-- Cross-bracing -->
             	<!-- https://www.pnas.org/doi/pdf/10.1073/pnas.1305813110 -->
-            	<prior id="crossBracing" name="distribution">
-            		<x id="NodeHeightDiff" spec="resub.math.NodeHeightDiff" clade1="@class1.root.prior" clade2="@class2.root.prior" />
-                    <Normal name="distr" mean="0" sigma="0.01" />
+            	<prior id="crossBracing.root" name="distribution">
+            		<x id="NodeHeightDiff.root" spec="resub.math.NodeHeightDiff">
+            			<clade idref="class1.root.prior" />
+            			<clade idref="class2.root.prior" />
+            		</x> 
+                    <Exponential name="distr" mean="0.01" />
                  </prior>
 
+				<prior id="crossBracing.mrca" name="distribution">
+            		<x id="NodeHeightDiff.mrca" spec="resub.math.NodeHeightDiff">
+            			<clade idref="LysRS-I.prior" />
+						<clade idref="PheRS.prior" />
+						<clade idref="ProRS.prior" />
+						<clade idref="AlaRS.prior" />
+						<clade idref="SerRS.prior" />
+						<clade idref="HisRS.prior" />
+						<clade idref="ArgRS.prior" />
+						<!-- <clade idref="GlnGluGlxRS.prior" /> -->
+						<clade idref="ThrRS.prior" />
+						<clade idref="IleRS.prior" />
+						<clade idref="ValRS.prior" />
+						<clade idref="GlyRS-AE.prior" /> 
+						<clade idref="TyrRS.prior" />
+						<clade idref="TrpRS.prior" />
+						<clade idref="AsnRS.prior" />
+            		</x> 
+                    <Exponential name="distr" mean="0.01" />
+                 </prior>
             	
 
                  <distribution id='class1.root.prior' spec='beast.base.evolution.tree.MRCAPrior' monophyletic='true' tree="@Tree.t:class1">
@@ -1328,7 +1358,6 @@ name="alignment">
 
 
                 <distribution id='PylRS.prior' spec='beast.base.evolution.tree.MRCAPrior' monophyletic='true' tree="@Tree.t:class2">
-                    <!-- <LogNormal name="distr" meanInRealSpace="true" M="4" S="0.1" /> -->
                     <taxonset id="taxonset-PylRS" spec='TaxonSet'>
 
                         <taxon idref="PylRS_AF_Arch_Candidatus_Methanomassiliicoccus_intestinalis_Issoire-Mx1_gene16153983" />
@@ -1346,7 +1375,7 @@ name="alignment">
 
 
                 <distribution id='GlyRS-AE.prior' spec='beast.base.evolution.tree.MRCAPrior' monophyletic='true' tree="@Tree.t:class2">
-                    <LogNormal name="distr" meanInRealSpace="true" M="@lacaM" S="@lacaS" />
+                    <LogNormal name="distr" meanInRealSpace="true" M="@lucaM" S="@lucaS" />
                     <taxonset id="taxonset-GlyRS-AE" spec='TaxonSet'>
 
                         <taxon idref="GlyRS-E_AF_Euk_Cryptococcus_neoformans_var_neoformans_JEC21_gene3258293" />
@@ -1401,7 +1430,6 @@ name="alignment">
 
 
                 <distribution id='LysRS-II.prior' spec='beast.base.evolution.tree.MRCAPrior' monophyletic='true' tree="@Tree.t:class2">
-                    <LogNormal name="distr" meanInRealSpace="true" M="@lucaM" S="@lucaS" />
                     <taxonset id="taxonset-LysRS-II" spec='TaxonSet'>
 
                         <taxon idref="LysRS-II_AF_Arch_Aciduliprofundum_boonei_T469_gene8827564" />
@@ -1576,6 +1604,7 @@ name="alignment">
                         <taxon idref="ProRS-B_PDB_Bact_R_palustris_2I4O" />
                         <taxon idref="ProRS-B_PDB_Bact_S_aureus_5znj" />
                         <taxon idref="ProRS-B_AF_Bact_Acinetobacter_baylyi_ADP1_gene45233245" />
+                        <taxon idref="ProRS_PDB_Bact_E_faecalis_2J3M" />
 
                         <taxon idref="ProRS-M_AF_Mito_Drosophila_melanogaster_gene38331" />
                         <taxon idref="ProRS-M_AF_Euk_Candida_albicans_SC5314_gene3640100" />
@@ -1586,7 +1615,7 @@ name="alignment">
                         <taxon idref="ProRS-M_AF_Mito_Priapulus_caudatus_gene106814725" />
                         <taxon idref="ProRS-M_AF_Mito_Saccoglossus_kowalevskii_gene100368006" />
                         <taxon idref="ProRS-M_AF_Mito_Schizosaccharomyces_pombe_gene2540642" />
-                        <taxon idref="ProRS_PDB_Bact_E_faecalis_2J3M" />
+                        
                         
                     </taxonset>   
                 </distribution>
@@ -1625,6 +1654,7 @@ name="alignment">
                         <taxon idref="ProRS-B_AF_Bact_Streptobacillus_moniliformis_DSM_12112_gene29673723" />
                         <taxon idref="ProRS-B_PDB_Bact_R_palustris_2I4O" />
                         <taxon idref="ProRS-B_PDB_Bact_S_aureus_5znj" />
+                        <taxon idref="ProRS_PDB_Bact_E_faecalis_2J3M" />
                         <taxon idref="ProRS-B_AF_Bact_Acinetobacter_baylyi_ADP1_gene45233245" />
 
                         <taxon idref="ProRS-M_AF_Mito_Drosophila_melanogaster_gene38331" />
@@ -1636,7 +1666,7 @@ name="alignment">
                         <taxon idref="ProRS-M_AF_Mito_Priapulus_caudatus_gene106814725" />
                         <taxon idref="ProRS-M_AF_Mito_Saccoglossus_kowalevskii_gene100368006" />
                         <taxon idref="ProRS-M_AF_Mito_Schizosaccharomyces_pombe_gene2540642" />
-                        <taxon idref="ProRS_PDB_Bact_E_faecalis_2J3M" />
+                        
                         
                     </taxonset>   
                 </distribution>
@@ -1655,7 +1685,6 @@ name="alignment">
                         <taxon idref="ProRS-M_AF_Mito_Priapulus_caudatus_gene106814725" />
                         <taxon idref="ProRS-M_AF_Mito_Saccoglossus_kowalevskii_gene100368006" />
                         <taxon idref="ProRS-M_AF_Mito_Schizosaccharomyces_pombe_gene2540642" />
-                        <taxon idref="ProRS_PDB_Bact_E_faecalis_2J3M" />
                         
                     </taxonset>   
                 </distribution>
@@ -2218,14 +2247,32 @@ name="alignment">
                         <taxon idref="SerRS_PDB_Mito_B_taurus_1wle" />
                         <taxon idref="Slimp_AF_Euk_Lingula_anatina_gene106166201" />
                         <taxon idref="Slimp_AF_Mito_Drosophila_melanogaster_proteinAAN13983" />
-                        <taxon idref="SerRS-A_AF_Arch_Conexivisphaera_calida_protein1635512986" />
+
+                       <!--  <taxon idref="SerRS-A_AF_Arch_Conexivisphaera_calida_protein1635512986" />
                         <taxon idref="SerRS-A_AF_Arch_Methanosarcina_barkeri_protein805401349" />
                         <taxon idref="SerRS-A_AF_Arch_Unclassified_Thermoplasmata_protein1635512986" />
                         <taxon idref="SerRS-A_PDB_Arch_M_barkeri_2cjb" />
                         <taxon idref="SerRS-A_AF_Arch_Ignisphaera_aggregans_protein304378874" />
+ -->
+                      
          
                      </taxonset>   
                 </distribution>
+
+
+                <distribution id='SerRS-A.prior' spec='beast.base.evolution.tree.MRCAPrior' monophyletic='true' tree="@Tree.t:class2">
+                	<LogNormal name='distr' meanInRealSpace='true' M='@lacaM' S='@lacaS' />
+                    <taxonset id="taxonset-SerRS-A" spec='TaxonSet'>
+
+
+                    	<taxon idref="SerRS-A_AF_Arch_Conexivisphaera_calida_protein1635512986" />
+                        <taxon idref="SerRS-A_AF_Arch_Methanosarcina_barkeri_protein805401349" />
+                        <taxon idref="SerRS-A_AF_Arch_Unclassified_Thermoplasmata_protein1635512986" />
+                        <taxon idref="SerRS-A_PDB_Arch_M_barkeri_2cjb" />
+                        <taxon idref="SerRS-A_AF_Arch_Ignisphaera_aggregans_protein304378874" />
+
+                    </taxonset>
+               </distribution>
 
 
                  <distribution id='AspLys.prior' spec='beast.base.evolution.tree.MRCAPrior' monophyletic='true' tree="@Tree.t:class2">
@@ -2273,6 +2320,40 @@ name="alignment">
 
                       
                     </taxonset>   
+                </distribution>
+
+
+                 <distribution id='AsnRS.prior' spec='beast.base.evolution.tree.MRCAPrior' monophyletic='true' tree="@Tree.t:class2">
+
+                 	<LogNormal name='distr' meanInRealSpace='true' M='@lucaM' S='@lucaS' />
+                    <taxonset spec='TaxonSet'>
+
+
+                        <taxon idref="AsnRS_AF_Arch_Candidatus_Korarchaeum_cryptofilum_OPF8_gene6094562" />
+                        <taxon idref="AsnRS_AF_Arch_Candidatus_Nitrososphaera_gargensis_Ga92_gene13796664" />
+                        <taxon idref="AsnRS_AF_Arch_Ferroplasma_acidarmanus_Fer1_gene16025664" />
+                        <taxon idref="AsnRS_AF_Arch_Pyrococcus_sp_ST04_gene13021535" />
+                        <taxon idref="AsnRS_AF_Bact_Clostridium_acetobutylicum_DSM_1731_gene44999755" />
+                        <taxon idref="AsnRS_AF_Bact_Escherichia_coli_O157:H7_str._Sakai_gene917756" />
+                        <taxon idref="AsnRS_AF_Bact_Mycoplasma_hyopneumoniae_168-L_gene57101291" />
+                        <taxon idref="AsnRS_AF_Bact_Porphyromonas_gingivalis_ATCC_33277_gene29256423" />
+                        <taxon idref="AsnRS_AF_Bact_Streptobacillus_moniliformis_DSM_12112_gene29673200" />
+                        <taxon idref="AsnRS_AF_Bact_Thermus_thermophilus_HB8_gene3168522" />
+                        <taxon idref="AsnRS_AF_Bact_Treponema_pallidum_subsp_pertenue_str_SamoaD_gene57879132" />
+                        <taxon idref="AsnRS_AF_Bact_unclassified_Blastocatellia_proteinRPI49177.1" />
+                        <taxon idref="AsnRS_AF_Euk_Candida_albicans_SC5314_gene3646227" />
+                        <taxon idref="AsnRS_AF_Euk_Cryptococcus_gattii_WM276_gene10190222" />
+                        <taxon idref="AsnRS_AF_Euk_Encephalitozoon_intestinalis_ATCC_50506_gene9698489" />
+                        <taxon idref="AsnRS_AF_Euk_Homo_sapiens_gene4677" />
+                        <taxon idref="AsnRS_AF_Euk_Saccharomyces_cerevisiae_S288C_gene856412" />
+                        <taxon idref="AsnRS_AF_Euk_Vitis_vinifera_gene100257593" />
+                        <taxon idref="AsnRS_AF_Mito_Homo_sapiens_gene79731" />
+                        <taxon idref="AsnRS_AF_Mito_Zeugodacus_cucurbitae_gene105213230" />
+                        <taxon idref="AsnRS_PDB_Arch_P_horikoshii_1X54" />
+                        <taxon idref="AsnRS_PDB_Bact_E_anophelis_6pqh" />
+
+              
+                     </taxonset>   
                 </distribution>
 
 
@@ -2739,6 +2820,27 @@ name="alignment">
                
 
 
+
+
+				<distribution id='LysRS-I.prior' spec='beast.base.evolution.tree.MRCAPrior' monophyletic='true' tree="@Tree.t:class1">
+
+                    <LogNormal name='distr' meanInRealSpace='true' M='@lucaM' S='@lucaS' />
+
+                    <taxonset id="taxonset.LysRS-I" spec='TaxonSet'>
+						<taxon idref="LysRS-I_AF_Arch_Candidatus_Nitrosopumilus_koreensis_AR1_gene13726042" />
+						<taxon idref="LysRS-I_AF_Arch_Ferroplasma_acidarmanus_Fer1_gene16025146" />
+						<taxon idref="LysRS-I_AF_Arch_Halorubrum_lacusprofundi_ATCC_49239_gene7400505" />
+						<taxon idref="LysRS-I_AF_Bact_Cereibacter_sphaeroides_KD131_gene67447319" />
+						<taxon idref="LysRS-I_AF_Arch_Candidatus_Bathyarchaeota_archaeon_proteinRJS75864.1" />
+						<taxon idref="LysRS-I_AF_Bact_Cyanobacteria_bacterium_J007_proteinRMH73500.1" />
+						<taxon idref="LysRS-I_AF_Bact_Streptomyces_albidoflavus_gene15147364" />
+						<taxon idref="LysRS-I_AF_Bact_Treponema_denticola_ATCC_35405_gene2739918" />
+						<taxon idref="LysRS-I_PDB_Arch_P_hori_1IRX" />
+                    </taxonset>
+                  
+                    </distribution>
+
+
                 
                   <distribution id='ArgRS.prior' spec='beast.base.evolution.tree.MRCAPrior' monophyletic='true' tree="@Tree.t:class1">
 
@@ -2868,7 +2970,7 @@ name="alignment">
                     <distribution id='GlnGluGlxRS.prior' spec='beast.base.evolution.tree.MRCAPrior' monophyletic='true' tree="@Tree.t:class1">
 
 
-                        <LogNormal name='distr' meanInRealSpace='true' M='@lucaM' S='@lucaS' />
+                        <!-- <LogNormal name='distr' meanInRealSpace='true' M='@lucaM' S='@lucaS' /> -->
 
                         <taxonset id="taxonset.GlnGluGlxRS" spec='TaxonSet'>
 
@@ -3331,14 +3433,11 @@ name="alignment">
 
 
 
-              <!-- <distribution id="transitionHeight.prior" spec="beastlabs.math.distributions.BetaRange" x="@transitionHeight" lower="@$(focalPrior).height" upper="@TreeHeight.t:class1" alpha="2" beta="6"/> -->
-
-<!--  -->
-                <distribution id="transitionHeight.prior" spec="resub.math.ResubTransitionHeightPrior" x="@transitionHeight" rate="100" clade="@$(focalPrior)" />
+               <distribution id="transitionHeight.prior" spec="resub.math.ResubTransitionHeightPrior" x="@transitionHeight" rate="100" clade="@$(focalPrior)" />
 
 
 
-                 <prior id="substModel.indicator.prior" spec="resub.math.BooleanPoissonDistribution" name="distribution" x="@substModel.indicator" lambda="100" />
+                 <prior id="substModel.indicator.prior" spec="phoneme.BooleanPoissonDistribution" name="distribution" x="@substModel.indicator" lambda="100" />
 
                  <prior name="distribution" x="@aa.rates">
                     <LogNormal name="distr" meanInRealSpace="true" M="1" S="1"/>
@@ -3390,6 +3489,8 @@ name="alignment">
                         <parameter id="RealParameter" spec="parameter.RealParameter" dimension="20" lower="0.0" name="alpha" upper="0.0">4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0 4.0</parameter>
                     </distr>
                 </prior>
+
+
                 <distribution id="OBAMA_GammaShapePrior.s:aaRS" spec="bmodeltest.math.distributions.BMTPrior" count="@OBAMA_hasGammaRates.s:aaRS" x="@OBAMA_gammaShape.s:aaRS">
                     <Exponential id="Exponential.0" name="distr">
                         <parameter id="RealParameter.0" spec="parameter.RealParameter" estimate="false" name="mean">1.0</parameter>
@@ -3463,25 +3564,38 @@ name="alignment">
             <distribution id="likelihood" spec="CompoundDistribution" useThreads="true">
 
 
-            	 <distribution data="@class1" id="treeLikelihood.resub.class1" spec="TreeLikelihood" tree="@Tree.t:class1">
+
+            
+                 <distribution data="@class1" id="treeLikelihood.resub.class1" spec="aars.evolution.likelihood.EpochBeagleTreeLikelihood" tree="@Tree.t:class1">
+                    
+                        <epochDates idref="transitionHeight" />
+
+                        <model idref="svs.substModel" />
+                        <model idref="resubModel" />
+
                         <siteModel spec='beast.base.evolution.sitemodel.SiteModel' shape="@OBAMA_gammaShape.s:aaRS" gammaCategoryCount="4" mutationRate="@mutationRate.s:class1">
-                            <substModel idref="resubModel" />
+                            <substModel spec="beast.base.evolution.substitutionmodel.WAG" />
                        </siteModel>
+
                         <branchRateModel idref="clockModel.class1" />
+                    
                 </distribution>
 
 
+                <distribution data="@class2" id="treeLikelihood.resub.class2" spec="aars.evolution.likelihood.EpochBeagleTreeLikelihood" tree="@Tree.t:class2">
+                    
+                        <epochDates idref="transitionHeight" />
 
- 				<distribution data="@class2" id="treeLikelihood.resub.class2" spec="TreeLikelihood" tree="@Tree.t:class2">
+                        <model idref="svs.substModel" />
+                        <model idref="resubModel.clone" />
+
                         <siteModel spec='beast.base.evolution.sitemodel.SiteModel' shape="@OBAMA_gammaShape.s:aaRS" gammaCategoryCount="4" mutationRate="@mutationRate.s:class2">
-                            <substModel idref="resubModel.clone" />
+                            <substModel spec="beast.base.evolution.substitutionmodel.WAG" />
                        </siteModel>
+
                         <branchRateModel idref="clockModel.class2" />
+                    
                 </distribution>
-
-
-
-
 
 
             </distribution>
@@ -3527,11 +3641,21 @@ name="alignment">
 
 
 
-        <operator id="OBAMA_FrequenciesAVMNOperator.s:aaRS" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="500" initial="1000" weight="1.0">
+       
+
+        <operator id="freqs.exchange" spec="kernel.BactrianDeltaExchangeOperator" delta="0.1" weight="2.0">
+            <parameter idref="OBAMA_frequencies.s:aaRS" />
+        </operator>
+
+        <operator id="OBAMA_FrequenciesAVMNOperator.s:aaRS" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="500" initial="1000" weight="2.0">
             <transformations id="LogConstrainedSumTransform.s:aaRS" spec="operator.kernel.Transform$LogConstrainedSumTransform">
                 <f idref="OBAMA_frequencies.s:aaRS"/>
             </transformations>
         </operator>
+
+
+
+
         <operator id="OBAMA_gammaShapeScaler.s:aaRS" spec="bmodeltest.evolution.operators.BMTScaleOperator" count="@OBAMA_hasGammaRates.s:aaRS" parameter="@OBAMA_gammaShape.s:aaRS" scaleFactor="0.5" weight="0.5"/>
         <operator id="OBAMA_ProportionInvariableScaler.s:aaRS" spec="bmodeltest.evolution.operators.BMTScaleOperator" count="@OBAMA_hasInvariableSites.s:aaRS" parameter="@OBAMA_ProportionInvariable.s:aaRS" scaleFactor="0.5" weight="0.5"/>
         <operator id="OBAMA_hasGammaRatesFlipper.s:aaRS" spec="bmodeltest.evolution.operators.BMTBirthDeathOperator" count="@OBAMA_hasGammaRates.s:aaRS" rates="@OBAMA_gammaShape.s:aaRS" weight="0.1"/>
@@ -3548,16 +3672,19 @@ name="alignment">
 
         <operator id="aaExpand.flipper" spec="beast.base.inference.operator.BitFlipOperator" parameter="@aaExpand" uniform="false" weight="1.0"/>
         <operator id="aaRefine.flipper" spec="beast.base.inference.operator.BitFlipOperator" parameter="@aaRefine" uniform="false" weight="1.0"/>
-        <operator id="useResub.flipper" spec="BitFlipOperator" uniform="true" parameter="@useResub" weight="1.0" />
+        <operator id="useResub.flipper" spec="BitFlipOperator" uniform="true" parameter="@useResub" weight="5.0" />
+
+
         <operator id="RandomWalk.transitionHeight" spec="kernel.BactrianRandomWalkOperator" parameter="@transitionHeight" weight="5.0"/>
         <operator id="transitionPi.uniform" spec="UniformOperator" parameter="@transitionPi" weight="5.0"/>
 
 
 
 
+
+
         <operator id="SpikeUpRateDown.class1" spec="gammaspike.operator.SpikeUpRateDown" parameter="@branchRates.class1" spikes="@spikes.class1" scaleFactor="0.1" weight="5.0"/>
         <operator id="SpikeUpRateDown.class2" spec="gammaspike.operator.SpikeUpRateDown" parameter="@branchRates.class2" spikes="@spikes.class2" scaleFactor="0.1" weight="5.0"/>
-        <!-- <operator id="clockRate.scale" spec="kernel.BactrianScaleOperator" parameter="@clockRate" scaleFactor="0.1" weight="0.5"/> -->
         
          <operator id="BitFlipOperator.class1" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel.class1" weight="3.0" />
          <operator id="BitFlipOperator.class2" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel.class2" weight="3.0" />
@@ -3623,6 +3750,9 @@ name="alignment">
             <log idref="treeLikelihood.resub.class2"/>
             <log idref="prior"/>
 
+
+            
+            <log idref="saltation"/>
             <log idref="useResub"/>
             <log idref="resubModel"/>
             <log idref="lambda.class1"/>
@@ -3634,7 +3764,8 @@ name="alignment">
             <log idref="spikeShape.class2"/>
             <log idref="spikeMean.class2"/>
 
-            <log idref="NodeHeightDiff"/>
+            <log idref="NodeHeightDiff.root"/>
+            	<log idref="NodeHeightDiff.mrca"/>
 
             <log idref="$(focalPrior).height"/>
 
@@ -3658,6 +3789,9 @@ name="alignment">
             <log id="TreeHeight.t:class1" spec="beast.base.evolution.tree.TreeStatLogger" tree="@Tree.t:class1"/>
             <log id="TreeHeight.t:class2" spec="beast.base.evolution.tree.TreeStatLogger" tree="@Tree.t:class2"/>
             <log idref="OBAMA_frequencies.s:aaRS"/>
+
+
+
             <log idref="OBAMA_ModelIndicator.s:aaRS"/>
             <log idref="OBAMA_gammaShape.s:aaRS"/>
             <log idref="OBAMA_ProportionInvariable.s:aaRS"/>
@@ -3700,6 +3834,7 @@ name="alignment">
             <log idref="AlaRS.prior" />
             <log idref="GlyRS-B.prior" />
             <log idref="HisRS.prior" />
+            <log idref="LysRS-I.prior"/>
 
            
         </logger>
@@ -3707,21 +3842,16 @@ name="alignment">
 
         <logger id="screenlog" spec="Logger" logEvery="5000">
             <log idref="likelihood"/>
-           <!--  <log idref="treeLikelihood.resub.class1"/>
-            <log idref="treeLikelihood.resub.class2"/> -->
              <log idref="TreeHeight.t:class1"/>
              <log idref="TreeHeight.t:class2"/>
-            <log idref="transitionHeight" />
             <log idref="$(focalPrior).height"/>
             <log idref="resubModel"/>
-            <log idref="NodeHeightDiff"/>
-           
            
 
         </logger>
 
         <logger id="ratelog" spec="Logger" fileName="$(dataset)-rates.log" logEvery="10000" sanitiseHeaders="false" sort="smart" ascii="false">
-            <log spec="resub.logger.RateLogger" parameter="@aa.rates" dataType="@aaDataType" indicator="@substModel.indicator"/>
+            <log spec="phoneme.RateLogger" parameter="@aa.rates" dataType="@aaDataType" indicator="@substModel.indicator"/>
         </logger>
 
 

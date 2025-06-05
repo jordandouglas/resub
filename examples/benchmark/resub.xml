@@ -27,10 +27,9 @@
     </data>
 
 
-    <substModel id="svs.substModel" spec="beastclassic.evolution.substitutionmodel.SVSGeneralSubstitutionModel" rates="@aa.rates" symmetric="true" rateIndicator="@substModel.indicator">
+    <substModel id="svs.substModel" spec="resub.substitutionmodel.SVSGeneralSubstitutionModel" rates="@aa.rates" symmetric="true" rateIndicator="@substModel.indicator">
         <frequencies idref="aa.freqs"/>
     </substModel>
-
 
     <stubs id="stubs" spec="gammaspike.tree.Stubs" tree="@tree" prior="@StumpedTreePrior" />
 
@@ -43,7 +42,6 @@
                     <alignment idref="data"/>
                 </taxonset>
             </tree>
-
 
             <parameter id="aa.rates" spec="parameter.RealParameter" name="stateNode" dimension="190">1</parameter>
             <parameter id="substModel.indicator" spec="parameter.BooleanParameter" name="stateNode" dimension="190">true</parameter>
@@ -69,7 +67,7 @@
             <parameter id="transitionPi" spec="parameter.RealParameter" lower="0.0" upper="1.0" name="stateNode">0.5</parameter>
             <parameter id="transitionHeight" spec="parameter.RealParameter" lower="0.0" name="stateNode">0.01</parameter>
 
-            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">true</parameter>
+            <parameter id="useSpikeModel" spec="parameter.BooleanParameter" name="stateNode">false</parameter>
 
            
         </state>
@@ -80,7 +78,7 @@
             </populationModel>
         </init>
 
-        <init id="SVSInitialiser" spec="resub.substitutionmodel.SVSInit" indicator="@substModel.indicator" dataType="@aaDataType">
+        <init id="SVSInitialiser" spec="phoneme.SVSInit" indicator="@substModel.indicator" dataType="@aaDataType">
             <data idref="data" />
         </init>
 
@@ -95,7 +93,7 @@
                     <LogNormal name="distr" meanInRealSpace="true" M="1" S="1"/>
                  </prior>
               
-                <prior id="substModel.indicator.prior" spec="resub.math.BooleanPoissonDistribution" name="distribution" x="@substModel.indicator" lambda="100" />
+                <prior id="substModel.indicator.prior" spec="phoneme.BooleanPoissonDistribution" name="distribution" x="@substModel.indicator" lambda="100" />
 
                   <distribution id="StumpedTreePrior" spec="gammaspike.distribution.StumpedTreePrior" r0="@r0" lambda="@lambda" ignoreTreePrior="false" ignoreStubPrior="false" tree="@tree"> 
                  </distribution>
@@ -141,7 +139,7 @@
 
 
 
-                <distribution spec="beastlabs.math.distributions.BetaRange" x="@transitionHeight" lower="0" upper="@treeHeight" alpha="6" beta="2"/>
+                <distribution spec="resub.math.BetaRange" x="@transitionHeight" lower="0" upper="@treeHeight" alpha="6" beta="2"/>
 
 
                  <prior name="distribution" x="@spikeShape">
@@ -150,7 +148,7 @@
 
                  <prior name="distribution" spec="gammaspike.distribution.BranchRatePrior" branchRates="@branchRates" tree="@tree" sigma="@clockSD"/>
 
-                 <prior id="BranchSpikePrior" name="distribution" spec="gammaspike.distribution.BranchSpikePrior" stubs="@stubs" spikes="@spikes" tree="@tree" shape="@spikeShape"  indicator="@useSpikeModel"/>
+                 <prior id="BranchSpikePrior" name="distribution" spec="gammaspike.distribution.BranchSpikePrior" stubs="@stubs" spikes="@spikes" tree="@tree" shape="@spikeShape" indicator="@useSpikeModel"/>
 
 
 
@@ -224,9 +222,8 @@
         <operator id="Scale.transitionHeight" spec="kernel.BactrianScaleOperator" parameter="@transitionHeight" weight="0.5"/>
         <operator id="transitionPi.uniform" spec="UniformOperator" parameter="@transitionPi" weight="0.5"/>
 
-
         
-        <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="3.0" />
+        <!-- <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="3.0" /> -->
 
 
         <!-- Site/clock model operators -->
@@ -262,8 +259,8 @@
 
 
         <operator id="substModel.indicatorFlip" spec="BitFlipOperator" parameter="@substModel.indicator" weight="5"/>
-        <operator id="substModel.scale.aa" spec="kernel.BactrianScaleOperator" parameter="@aa.rates" scaleFactor="0.1" weight="5.0"/>
-        <operator id="AVMN.substmodel" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="500" initial="1000" weight="3.0">
+        <operator id="substModel.scale.aa" spec="kernel.BactrianScaleOperator" parameter="@aa.rates" scaleFactor="0.1" weight="10.0"/>
+        <operator id="AVMN.substmodel" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="500" initial="1000" weight="5.0">
             <transformations spec="operator.kernel.Transform$LogTransform">
                  <f idref="aa.rates"/>
             </transformations>
@@ -294,7 +291,6 @@
 
 
 
-
             <log idref="useSpikeModel"/>
             <log idref="gammaShape"/>
 
@@ -307,7 +303,7 @@
         </logger>
 
          <logger id="ratelog" spec="Logger" fileName="$(dataset)-rates.log" logEvery="10000" sanitiseHeaders="false" sort="smart" ascii="false">
-            <log spec="resub.logger.RateLogger" parameter="@aa.rates" dataType="@aaDataType" indicator="@substModel.indicator"/>
+            <log spec="phoneme.RateLogger" parameter="@aa.rates" dataType="@aaDataType" indicator="@substModel.indicator"/>
         </logger>
 
         <logger id="screenlog" spec="Logger" logEvery="5000">
@@ -315,8 +311,6 @@
             <log idref="treeHeight" />
             <log idref="transitionHeight"/>
             <log idref="resubModel"/>
-            <log idref="spikeMean"/>
-            <log idref="useSpikeModel"/>
         </logger>
 
         <logger id="treelog" spec="Logger" fileName="$(dataset).trees" logEvery="10000" mode="tree">
@@ -330,3 +324,5 @@
     </run>
 
 </beast>
+
+
