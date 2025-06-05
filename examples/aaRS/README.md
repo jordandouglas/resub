@@ -15,6 +15,7 @@ The two Class trees are linked onto the same timescale using divergence time est
 
 ```
 {
+ "dataset":"IV",
  "state1":"I",
  "state2":"V",
  "focalPrior":"IleValRS.prior"
