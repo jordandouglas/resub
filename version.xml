@@ -1,8 +1,5 @@
-<package name='resub' version='0.0.1'>
-	<depends on='BEAST.base' atleast='2.7.6'/>
-	<depends on='BEAST.app' atleast='2.7.6'/>
-
-
+<package name='resub' version='1.0.0'>
+	<depends on='BEAST.base' atleast='2.7.8'/>
 
     <service type="beast.base.core.BEASTInterface">
 
