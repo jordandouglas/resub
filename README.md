@@ -7,27 +7,20 @@ Resub is a class of amino acid substituion models that assumes there were 19 ami
 ## Installation instructions
 
 
-This package requires BEAST 2.7.7. or newer.
+This package requires BEAST 2.7.8. or newer.
 
 1. Launch BEAUti
 2. Click on `File` -> `Manage Packages`
-3. Install `resub`. If it is not in the list of packages, you may need to add an extra package repository as follows:
-- Click the `Packager repositories` button. A dialog pops up.
-- Click the Add URL button. A dialog is shown where you can enter https://raw.githubusercontent.com/CompEvol/CBAN/master/packages-extra-2.7.xml
-- Click `OK`. There should be an extra entry in the list.
-- Click `Done`.
-- After a short delay, `resub` should appear in the list of packages.
-
+3. Install `resub`. 
 
 
 ### Other dependencies
 
 
-Requires BEAGLE installed. 
+Requires BEAGLE installed to use the fast multi-epoch substitution models. 
 
 To run these XML files, please also install the following BEAST 2 packages through the package manager
 - BEASTLabs
-- BEAST CLASSIC
 - Gamma spike model
 
 
@@ -46,7 +39,7 @@ Jordan Douglas jordan.douglas@auckland.ac.nz
 
 ## References
 
-
+Douglas, J., Bouckaert, R., Carter Jr, C. W., & Wills, P. R. (2025). Reduced amino acid substitution matrices find traces of ancient coding alphabets in modern day proteins. Molecular Biology and Evolution (in press). Preprint: https://www.biorxiv.org/content/10.1101/2025.02.19.639152v1 
 
 
 
