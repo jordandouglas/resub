@@ -33,9 +33,30 @@
     </substModel>
 
 
+<!--      <substModel id="OBAMA_substmodel.s:aaRS" spec="obama.substitutionmodel.OBAMAModel" modelIndicator="@OBAMA_ModelIndicator.s:aaRS" useExternalFreqs="true">
+        <model id="OBAMA_Blosum62.0" spec="obama.substitutionmodel.OBAMA_Blosum62"/>
+        <model id="OBAMA_CpREV.0" spec="obama.substitutionmodel.OBAMA_CpREV"/>
+        <model id="OBAMA_DCMut.0" spec="obama.substitutionmodel.OBAMA_DCMut"/>
+        <model id="OBAMA_Dayhoff.0" spec="obama.substitutionmodel.OBAMA_Dayhoff"/>
+        <model id="OBAMA_JTT.0" spec="obama.substitutionmodel.OBAMA_JTT"/>
+        <model id="OBAMA_LG.0" spec="obama.substitutionmodel.OBAMA_LG"/>
+        <model id="OBAMA_MtArt.0" spec="obama.substitutionmodel.OBAMA_MtArt"/>
+        <model id="OBAMA_MtREV.0" spec="obama.substitutionmodel.OBAMA_MtREV"/>
+        <model id="OBAMA_MtMam.0" spec="obama.substitutionmodel.OBAMA_MtMam"/>
+        <model id="OBAMA_RtREV.0" spec="obama.substitutionmodel.OBAMA_RtREV"/>
+        <model id="OBAMA_VT.0" spec="obama.substitutionmodel.OBAMA_VT"/>
+        <model id="OBAMA_WAG.0" spec="obama.substitutionmodel.OBAMA_WAG"/>
+        <model id="aaRSSubstModel" spec="aars.evolution.substitutionmodel.AARSSymmetricSubstModel"/>
+        <frequencies idref="aa.freqs"/>
+    </substModel>
+ -->
+
     <stubs id="stubs" spec="gammaspike.tree.Stubs" tree="@tree" prior="@StumpedTreePrior" />
 
-   
+    <!-- <run id="mcmc" spec="coupledMCMC.CoupledMCMC" chains="4" resampleEvery="10000" chainLength="5000000"> -->
+    <!-- <run id="asm" spec="asm.inference.AutoStopMCMC" chainLength="10000000"> -->
+        <!-- <stoppingCriterion spec="asm.inference.TreePSRF" cacheLimit="200" sampleSize="10" twoSided="true" smoothing="0.9" targetESS="100"/> -->
+        <!-- <stoppingCriterion spec="asm.inference.TraceESS" targetESS="100" traces="posterior,prior,likelihood"/> -->
 
     <run id="mcmc" spec="MCMC" chainLength="50000000">
         <state id="state" spec="State" storeEvery="100000">
@@ -83,7 +104,7 @@
             </populationModel>
         </init>
 
-        <init id="SVSInitialiser" spec="resub.substitutionmodel.SVSInit" indicator="@substModel.indicator" dataType="@aaDataType">
+        <init id="SVSInitialiser" spec="phoneme.SVSInit" indicator="@substModel.indicator" dataType="@aaDataType">
             <data idref="data" />
         </init>
 
@@ -98,7 +119,7 @@
                     <LogNormal name="distr" meanInRealSpace="true" M="1" S="1"/>
                  </prior>
               
-                <prior id="substModel.indicator.prior" spec="resub.math.BooleanPoissonDistribution" name="distribution" x="@substModel.indicator" lambda="100" />
+                <prior id="substModel.indicator.prior" spec="phoneme.BooleanPoissonDistribution" name="distribution" x="@substModel.indicator" lambda="100" />
 
                   <distribution id="StumpedTreePrior" spec="gammaspike.distribution.StumpedTreePrior" r0="@r0" lambda="@lambda" ignoreTreePrior="false" ignoreStubPrior="false" tree="@tree"> 
                  </distribution>
@@ -162,14 +183,16 @@
              <distribution id="likelihood" spec="beast.base.inference.CompoundDistribution">
 
 
-                <!-- <distribution data="@data" id="treeLikelihood" spec="TreeLikelihood" tree="@tree"> -->
 
-                <!-- If you don't have beagle installed, comment out the four lines below, and uncomment the one above -->
+
                 <distribution data="@data" id="treeLikelihood" spec="resub.likelihood.EpochBeagleTreeLikelihood" tree="@tree">
+                    
+
                         <epochDates idref="transitionHeight" />
+
+                        <!-- Subst models in reverse time -->
                         <model idref="svs.substModel" />
                         <model idref="resubModel" />
-
 
                         <siteModel spec='beast.base.evolution.sitemodel.SiteModel' shape="@gammaShape" gammaCategoryCount="4">
                             <substModel spec="beast.base.evolution.substitutionmodel.WAG" />
@@ -224,6 +247,7 @@
         <operator id="useResub.flipper" spec="BitFlipOperator" uniform="true" parameter="@useResub" weight="2.0" />
         <operator id="Scale.transitionHeight" spec="kernel.BactrianScaleOperator" parameter="@transitionHeight" weight="0.5"/>
         <operator id="transitionPi.uniform" spec="UniformOperator" parameter="@transitionPi" weight="0.5"/>
+        <!-- <operator id="saltation.flipper" spec="BitFlipOperator" uniform="true" parameter="@saltation" weight="2.0" /> -->
 
         
         <!-- <operator id="BitFlipOperator" spec="BitFlipOperator" uniform="true" parameter="@useSpikeModel" weight="3.0" /> -->
@@ -244,6 +268,7 @@
         </operator>
 
 
+        <!-- <operator id="aa.rates.scale" spec="kernel.BactrianScaleOperator" parameter="@aa.rates" scaleFactor="0.1" weight="30.0"/> -->
 
 
         <!-- Tree prior operators -->
@@ -306,11 +331,16 @@
 
         </logger>
 
+         <logger id="ratelog" spec="Logger" fileName="$(dataset)-rates.log" logEvery="10000" sanitiseHeaders="false" sort="smart" ascii="false">
+            <log spec="phoneme.RateLogger" parameter="@aa.rates" dataType="@aaDataType" indicator="@substModel.indicator"/>
+        </logger>
+
         <logger id="screenlog" spec="Logger" logEvery="5000">
             <log idref="likelihood"/>
             <log idref="treeHeight" />
             <log idref="transitionHeight"/>
             <log idref="resubModel"/>
+            <!-- <log idref="useSpikeModel" /> -->
             <log idref="saltation"/>
         </logger>
 

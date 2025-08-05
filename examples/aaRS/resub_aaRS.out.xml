@@ -6,7 +6,7 @@
 
 
 
-<lower id="$(focalPrior).height" spec="resub.math.MRCATime" clade="@$(focalPrior)" />
+<lower id="TrpTyrRS.prior.height" spec="resub.math.MRCATime" clade="@TrpTyrRS.prior" />
 
 
 
@@ -1224,7 +1224,7 @@ name="alignment">
 
 
 
- <substModel id="resubModel" spec="resub.substitutionmodel.SingleTransitionResub" useResub="@useResub"  state1="$(state1)" state2="$(state2)" h1="@transitionHeight" saltation="true" pi="@transitionPi" >  
+ <substModel id="resubModel" spec="resub.substitutionmodel.SingleTransitionResub" useResub="@useResub"  state1="W" state2="Y" h1="@transitionHeight" saltation="true" pi="@transitionPi" >  
 
              <!-- <substModel idref="OBAMA_substmodel.s:aaRS" />  pi="@transitionPi" -->
              <substModel idref="svs.substModel" />
@@ -1237,7 +1237,7 @@ name="alignment">
 
 
 
- <substModel id="resubModel.clone" spec="resub.substitutionmodel.SingleTransitionResub" useResub="@useResub"  state1="$(state1)" state2="$(state2)" h1="@transitionHeight" saltation="true" pi="@transitionPi"  >  
+ <substModel id="resubModel.clone" spec="resub.substitutionmodel.SingleTransitionResub" useResub="@useResub"  state1="W" state2="Y" h1="@transitionHeight" saltation="true" pi="@transitionPi"  >  
 
              <!-- <substModel idref="OBAMA_substmodel.s:aaRS" /> -->
              <substModel idref="svs.substModel" />
@@ -3462,10 +3462,10 @@ name="alignment">
 
 
 
-                <!-- <distribution spec="resub.math.BetaRange" x="@transitionHeight" lower="@$(focalPrior).height" upper="@TreeHeight.t:class1" alpha="2" beta="5"/> -->
+                <!-- <distribution spec="resub.math.BetaRange" x="@transitionHeight" lower="@TrpTyrRS.prior.height" upper="@TreeHeight.t:class1" alpha="2" beta="5"/> -->
 <!--  -->
 <!--  -->
-                <distribution id="transitionHeight.prior" spec="resub.math.ResubTransitionHeightPrior" x="@transitionHeight" rate="100" clade="@$(focalPrior)" />
+                <distribution id="transitionHeight.prior" spec="resub.math.ResubTransitionHeightPrior" x="@transitionHeight" rate="100" clade="@TrpTyrRS.prior" />
 
 
 
@@ -3597,13 +3597,13 @@ name="alignment">
 
 
 
-                <!-- <distribution data="@class1" id="treeLikelihood.resub.class1" spec="TreeLikelihood" tree="@Tree.t:class1"> -->
+                <distribution data="@class1" id="treeLikelihood.resub.class1" spec="TreeLikelihood" tree="@Tree.t:class1">
 
                 <!-- If you don't have beagle installed, comment out the four lines below, and uncomment the one above -->
-                 <distribution data="@class1" id="treeLikelihood.resub.class1" spec="resub.likelihood.EpochBeagleTreeLikelihood" tree="@Tree.t:class1">
+                <!--  <distribution data="@class1" id="treeLikelihood.resub.class1" spec="resub.likelihood.EpochBeagleTreeLikelihood" tree="@Tree.t:class1">
                         <epochDates idref="transitionHeight" />
                         <model idref="svs.substModel" />
-                        <model idref="resubModel" />
+                        <model idref="resubModel" /> -->
 
                         <siteModel spec='beast.base.evolution.sitemodel.SiteModel' shape="@OBAMA_gammaShape.s:aaRS" gammaCategoryCount="4" mutationRate="@mutationRate.s:class1">
                             <substModel spec="beast.base.evolution.substitutionmodel.WAG" />
@@ -3614,13 +3614,13 @@ name="alignment">
                 </distribution>
 
 
- 				<!-- <distribution data="@class2" id="treeLikelihood.resub.class2" spec="TreeLikelihood" tree="@Tree.t:class2"> -->
+ 				<distribution data="@class2" id="treeLikelihood.resub.class2" spec="TreeLikelihood" tree="@Tree.t:class2">
 
                 <!-- If you don't have beagle installed, comment out the four lines below, and uncomment the one above -->
-                <distribution data="@class2" id="treeLikelihood.resub.class2" spec="resub.likelihood.EpochBeagleTreeLikelihood" tree="@Tree.t:class2">
+                <!-- <distribution data="@class2" id="treeLikelihood.resub.class2" spec="resub.likelihood.EpochBeagleTreeLikelihood" tree="@Tree.t:class2">
                         <epochDates idref="transitionHeight" />
                         <model idref="svs.substModel" />
-                        <model idref="resubModel.clone" />
+                        <model idref="resubModel.clone" /> -->
 
                         <siteModel spec='beast.base.evolution.sitemodel.SiteModel' shape="@OBAMA_gammaShape.s:aaRS" gammaCategoryCount="4" mutationRate="@mutationRate.s:class2">
                             <substModel spec="beast.base.evolution.substitutionmodel.WAG" />
@@ -3776,7 +3776,7 @@ name="alignment">
 
 
 
-        <logger id="tracelog" spec="Logger" fileName="$(dataset).log" logEvery="10000" model="@posterior" sanitiseHeaders="true" sort="smart">
+        <logger id="tracelog" spec="Logger" fileName="WY.log" logEvery="10000" model="@posterior" sanitiseHeaders="true" sort="smart">
             <log idref="posterior"/>
             <log idref="likelihood"/>
             <log idref="treeLikelihood.resub.class1"/>
@@ -3799,7 +3799,7 @@ name="alignment">
             <log idref="NodeHeightDiff.root"/>
             	<log idref="NodeHeightDiff.mrca"/>
 
-            <log idref="$(focalPrior).height"/>
+            <log idref="TrpTyrRS.prior.height"/>
 
             <log idref="clockRate"/>
             <log idref="clockSD.class1"/>
@@ -3876,7 +3876,7 @@ name="alignment">
             <log idref="likelihood"/>
              <log idref="TreeHeight.t:class1"/>
              <log idref="TreeHeight.t:class2"/>
-            <log idref="$(focalPrior).height"/>
+            <log idref="TrpTyrRS.prior.height"/>
             <log idref="resubModel"/>
            
 
@@ -3885,7 +3885,7 @@ name="alignment">
 
 
 
-        <logger id="treelog.t:aaRS.class1" spec="Logger" fileName="$(dataset)-$(tree).trees" logEvery="10000" mode="tree">
+        <logger id="treelog.t:aaRS.class1" spec="Logger" fileName="WY-$(tree).trees" logEvery="10000" mode="tree">
             <log id="TreeWithMetaDataLogger.t:aaRS.class1" spec="beast.base.evolution.TreeWithMetaDataLogger" branchratemodel="@clockModel.class1" tree="@Tree.t:class1">
                 <metadata idref="stubs.class1" />
                 <metadata id="weightedSpikes.class1" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes.class1" spikeMean="@spikeMean.class1"/>
@@ -3893,7 +3893,7 @@ name="alignment">
         </logger>
 
 
-        <logger id="treelog.t:aaRS.class2" spec="Logger" fileName="$(dataset)-$(tree).trees" logEvery="10000" mode="tree">
+        <logger id="treelog.t:aaRS.class2" spec="Logger" fileName="WY-$(tree).trees" logEvery="10000" mode="tree">
             <log id="TreeWithMetaDataLogger.t:aaRS.class2" spec="beast.base.evolution.TreeWithMetaDataLogger" branchratemodel="@clockModel.class2" tree="@Tree.t:class2">
                 <metadata idref="stubs.class2" />
                 <metadata id="weightedSpikes.class2" spec="gammaspike.clockmodel.SpikeSize" spikes="@spikes.class2" spikeMean="@spikeMean.class2"/>

@@ -150,22 +150,11 @@
 
 
 
-                <!--   <distribution data="@data" id="treeLikelihood" spec="TreeLikelihood" tree="@tree">
-                        <siteModel spec='beast.base.evolution.sitemodel.SiteModel' shape="@gammaShape" gammaCategoryCount="4">
-                            <substModel idref="resubModel" />
-                       </siteModel>
-                    <branchRateModel id="clockModel" spec="beast.base.evolution.branchratemodel.UCRelaxedClockModel" clock.rate="1.0" tree="@tree" rates="@branchRates">
-                        <LogNormal id="ORCLogNormalDistributionModel.c:$(n)" M="1" S="$(clockSD)" meanInRealSpace="true" name="distr" />
-                   </branchRateModel> -->
+                <!-- <distribution data="@data" id="treeLikelihood" spec="TreeLikelihood" tree="@tree"> -->
 
-
-
+                <!-- If you don't have beagle installed, comment out the four lines below, and uncomment the one above -->
                 <distribution data="@data" id="treeLikelihood" spec="resub.likelihood.EpochBeagleTreeLikelihood" tree="@tree">
-                    
-
                         <epochDates idref="transitionHeight" />
-
-                        
                         <model idref="svs.substModel" />
                         <model idref="resubModel" />
 
@@ -197,16 +186,6 @@
         <operator id="YuleModelBICEPSTreeFlex.tclass1" spec="TreeStretchOperator" scaleFactor="0.01" tree="@tree" weight="2.0"/>
 
 
-
-        <!-- Site model -->
-     <!--    <operator id="frequenciesOperator" spec="kernel.AdaptableVarianceMultivariateNormalOperator" beta="0.05" burnin="500" initial="1000" weight="3.0">
-            <transformations spec="operator.kernel.Transform$LogTransform">
-                <f idref="gammaShape"/>
-            </transformations>
-            <transformations spec="operator.kernel.Transform$LogConstrainedSumTransform">
-                <f idref="aa.frequencies"/>
-            </transformations>
-        </operator> -->
         <operator id="_gammaShapeScaler.s:dna" spec="ScaleOperator" parameter="@gammaShape" scaleFactor="0.5" weight="1"/>
 
 

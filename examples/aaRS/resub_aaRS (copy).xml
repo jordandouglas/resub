@@ -3,8 +3,7 @@
 
 
 
-<data id="class1" spec="FilteredAlignment" filter="1,71,106-169,240-290,370,374,404,448,452,469-471,482-491,493" data="@class1.full" />
-<data id="class2" spec="FilteredAlignment" filter="7-42,75-91,118-119,123,130,137,139,151-153,159-174,191,203-206,217-230,235,240-253,260-270" data="@class2.full" />
+
 
 
 <lower id="$(focalPrior).height" spec="resub.math.MRCATime" clade="@$(focalPrior)" />
@@ -567,7 +566,7 @@
 
 
     <data
-id="class2.full"
+id="class2"
 spec="Alignment"
 name="alignment">
 
@@ -875,7 +874,7 @@ name="alignment">
     </data>
 
     <data
-id="class1.full"
+id="class1"
 spec="Alignment"
 name="alignment">
 
@@ -1137,6 +1136,8 @@ name="alignment">
 
     </data>
 
+    <!-- <data id="class1" spec="FilteredAlignment" filter="1-494" data="@class1" /> -->
+    <!-- <data id="class2" spec="FilteredAlignment" filter="1-2" data="@class2" /> -->
 
     <map name="Uniform" >beast.base.inference.distribution.Uniform</map>
 
@@ -1177,8 +1178,6 @@ name="alignment">
 
 
 
-
-
 <parameter id="mitoM" spec="parameter.RealParameter" name="stateNode">1.43</parameter>
 <parameter id="mitoS" spec="parameter.RealParameter" name="stateNode">0.0589</parameter>
 
@@ -1199,9 +1198,9 @@ name="alignment">
 
 
 
-
  <substModel id="resubModel" spec="resub.substitutionmodel.SingleTransitionResub" useResub="@useResub"  state1="$(state1)" state2="$(state2)" h1="@transitionHeight" saltation="@saltation" pi="@transitionPi" >  
 
+             <!-- <substModel idref="OBAMA_substmodel.s:aaRS" />  pi="@transitionPi" -->
              <substModel idref="svs.substModel" />
             <frequencies spec='Frequencies'>
                 <frequencies idref="OBAMA_frequencies.s:aaRS"/>
@@ -1221,6 +1220,7 @@ name="alignment">
             <refine idref="aaRefine" />
             <expand idref="aaExpand" />
     </substModel>
+
 
 
 
@@ -1309,6 +1309,7 @@ name="alignment">
             <populationModel idref="ConstantPopulation0.t:aaRS" />
         </init>
 
+
         <distribution id="posterior" spec="CompoundDistribution">
             <distribution id="prior" spec="CompoundDistribution">
 
@@ -1332,7 +1333,7 @@ name="alignment">
 						<clade idref="SerRS.prior" />
 						<clade idref="HisRS.prior" />
 						<clade idref="ArgRS.prior" />
-						<!-- <clade idref="GlnGluGlxRS.prior" /> -->
+						<clade idref="GlnGluGlxRS.prior" />
 						<clade idref="ThrRS.prior" />
 						<clade idref="IleRS.prior" />
 						<clade idref="ValRS.prior" />
@@ -1358,6 +1359,7 @@ name="alignment">
 
 
                 <distribution id='PylRS.prior' spec='beast.base.evolution.tree.MRCAPrior' monophyletic='true' tree="@Tree.t:class2">
+                    <!-- <LogNormal name="distr" meanInRealSpace="true" M="4" S="0.1" /> -->
                     <taxonset id="taxonset-PylRS" spec='TaxonSet'>
 
                         <taxon idref="PylRS_AF_Arch_Candidatus_Methanomassiliicoccus_intestinalis_Issoire-Mx1_gene16153983" />
@@ -2970,7 +2972,7 @@ name="alignment">
                     <distribution id='GlnGluGlxRS.prior' spec='beast.base.evolution.tree.MRCAPrior' monophyletic='true' tree="@Tree.t:class1">
 
 
-                        <!-- <LogNormal name='distr' meanInRealSpace='true' M='@lucaM' S='@lucaS' /> -->
+                        <LogNormal name='distr' meanInRealSpace='true' M='@lucaM' S='@lucaS' />
 
                         <taxonset id="taxonset.GlnGluGlxRS" spec='TaxonSet'>
 
@@ -3433,8 +3435,7 @@ name="alignment">
 
 
 
-               <distribution id="transitionHeight.prior" spec="resub.math.ResubTransitionHeightPrior" x="@transitionHeight" rate="100" clade="@$(focalPrior)" />
-
+                <distribution id="transitionHeight.prior" spec="resub.math.ResubTransitionHeightPrior" x="@transitionHeight" rate="100" clade="@$(focalPrior)" />
 
 
                  <prior id="substModel.indicator.prior" spec="phoneme.BooleanPoissonDistribution" name="distribution" x="@substModel.indicator" lambda="100" />
