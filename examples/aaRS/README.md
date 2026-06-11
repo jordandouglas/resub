@@ -7,6 +7,7 @@ This directory contains 2 aaRS datasets. The model is configured in `config.json
 
 - `resub_aaRS.xml` contains the common elements of the catalytic domain (Class I and II)
 - `resub_uryzme.xml` contains a subset of the sites in the alignment above (Class I and II)
+- `trees/` a folder of summary trees (nexus format), one per class-cherry combination
 
 
 The two Class trees are linked onto the same timescale using divergence time estimates from a previous tree of life study. 
